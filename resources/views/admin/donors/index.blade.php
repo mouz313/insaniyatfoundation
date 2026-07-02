@@ -10,7 +10,7 @@
             </div>
             <div>
                 <h1 class="mb-0" style="font-weight: 600;">Donors</h1>
-                <small class="text-muted"><i class="fas fa-fw fa-database"></i> {{ $donors->count() }} total</small>
+                <small class="text-muted"><i class="fas fa-fw fa-database"></i> {{ $total }} total</small>
             </div>
         </div>
         <div class="d-flex align-items-center mt-2 mt-md-0">
@@ -25,20 +25,13 @@
 @stop
 
 @section('content')
-    @php
-        $activeCount = $donors->where('status', 'active')->count();
-        $eligibleNow = $donors->where('is_eligible', true)->where('status', 'active')->count();
-        $pendingCount = $donors->where('is_eligible', false)->count();
-        $neverDonated = $donors->whereNull('last_donation_date')->count();
-    @endphp
-
     <div class="row">
         <div class="col-lg-3 col-6">
             <div class="card shadow-sm border-0 rounded-lg mb-4" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h3 class="text-white mb-0 font-weight-bold">{{ $donors->count() }}</h3>
+                            <h3 class="text-white mb-0 font-weight-bold">{{ $total }}</h3>
                             <small class="text-white-50">Total Donors</small>
                         </div>
                         <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
@@ -68,7 +61,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h3 class="text-white mb-0 font-weight-bold">{{ $eligibleNow }}</h3>
+                            <h3 class="text-white mb-0 font-weight-bold">{{ $eligibleNowCount }}</h3>
                             <small class="text-white-50">Eligible Now</small>
                         </div>
                         <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
@@ -83,7 +76,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h3 class="text-white mb-0 font-weight-bold">{{ $pendingCount }}</h3>
+                            <h3 class="text-white mb-0 font-weight-bold">{{ $cooldownCount }}</h3>
                             <small class="text-white-50">On Cooldown</small>
                         </div>
                         <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
@@ -97,55 +90,52 @@
 
     <div class="card shadow-sm border-0 rounded-lg">
         <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-            <div class="row align-items-end">
-                <div class="col-md-3">
-                    <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Search</small>
-                    <input type="text" id="searchName" class="form-control form-control-sm" placeholder="Name, phone or CNIC...">
+            <form method="GET" action="{{ route('admin.donors.index') }}">
+                <div class="row align-items-end">
+                    <div class="col-md-3">
+                        <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Search</small>
+                        <input type="text" name="search" class="form-control form-control-sm" placeholder="Name, phone or CNIC..." value="{{ request('search') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Blood Group</small>
+                        <select name="blood_group" class="form-control form-control-sm">
+                            <option value="">All</option>
+                            @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)
+                                <option value="{{ $bg }}" {{ request('blood_group') == $bg ? 'selected' : '' }}>{{ $bg }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Status</small>
+                        <select name="status" class="form-control form-control-sm">
+                            <option value="">All</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="ineligible" {{ request('status') == 'ineligible' ? 'selected' : '' }}>Ineligible</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">City</small>
+                        <select name="city_id" class="form-control form-control-sm">
+                            <option value="">All</option>
+                            @foreach($cities as $city)
+                                <option value="{{ $city->id }}" {{ request('city_id') == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">&nbsp;</small>
+                        <div class="d-flex">
+                            <button type="submit" class="btn btn-primary btn-sm mr-1"><i class="fas fa-search"></i> Filter</button>
+                            <a href="{{ route('admin.donors.index') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-times"></i> Clear</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Blood Group</small>
-                    <select id="filterBloodGroup" class="form-control form-control-sm">
-                        <option value="">All</option>
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Status</small>
-                    <select id="filterStatus" class="form-control form-control-sm">
-                        <option value="">All</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">City</small>
-                    <select id="filterCity" class="form-control form-control-sm">
-                        <option value="">All</option>
-                        @foreach($cities as $city)
-                            <option value="{{ $city->name }}">{{ $city->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Eligibility</small>
-                    <select id="filterEligible" class="form-control form-control-sm">
-                        <option value="">All Donors</option>
-                        <option value="eligible">Eligible Now</option>
-                        <option value="cooldown">On Cooldown</option>
-                    </select>
-                </div>
-            </div>
+            </form>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table id="donorsTable" class="table table-hover mb-0" style="width:100%;">
+                <table class="table table-hover mb-0" style="width:100%;">
                     <thead class="thead-light">
                         <tr>
                             <th>Reg No</th>
@@ -237,6 +227,9 @@
                     </tbody>
                 </table>
             </div>
+            <div class="p-3">
+                {{ $donors->links() }}
+            </div>
         </div>
     </div>
 @stop
@@ -272,39 +265,6 @@ $(function() {
     }
     updateClock();
     setInterval(updateClock, 1000);
-
-    var table = $('#donorsTable').DataTable({
-        pageLength: 20,
-        lengthMenu: [[10, 20, 50, 100, -1], [10, 20, 50, 100, 'All']],
-        order: [[0, 'desc']],
-        columnDefs: [
-            { orderable: false, targets: [1, 8] },
-            { searchable: false, targets: [1, 4] }
-        ]
-    });
-
-    $('#searchName').on('keyup change', function() {
-        table.search(this.value).draw();
-    });
-    $('#filterBloodGroup').on('change', function() {
-        table.column(3).search(this.value).draw();
-    });
-    $('#filterStatus').on('change', function() {
-        table.column(5).search(this.value).draw();
-    });
-    $('#filterCity').on('change', function() {
-        table.column(4).search(this.value).draw();
-    });
-    $('#filterEligible').on('change', function() {
-        var val = this.value;
-        if (val === 'eligible') {
-            table.column(7).search('Eligible').draw();
-        } else if (val === 'cooldown') {
-            table.column(7).search('d').draw();
-        } else {
-            table.column(7).search('').draw();
-        }
-    });
 
     $('.btn-delete').on('click', function() {
         var id = $(this).data('id');

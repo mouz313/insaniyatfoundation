@@ -132,8 +132,6 @@
                                     <x-adminlte-select name="sms_gateway" label="SMS Gateway Provider">
                                         <option value="">None</option>
                                         <option value="twilio" {{ ($settings['sms_gateway'] ?? '') == 'twilio' ? 'selected' : '' }}>Twilio</option>
-                                        <option value="zong" {{ ($settings['sms_gateway'] ?? '') == 'zong' ? 'selected' : '' }}>Zong</option>
-                                        <option value="telenor" {{ ($settings['sms_gateway'] ?? '') == 'telenor' ? 'selected' : '' }}>Telenor</option>
                                         <option value="bulk_sms" {{ ($settings['sms_gateway'] ?? '') == 'bulk_sms' ? 'selected' : '' }}>BulkSMS.pk</option>
                                     </x-adminlte-select>
                                     <x-adminlte-input name="sms_api_key" label="API Key" value="{{ $settings['sms_api_key'] ?? '' }}"/>

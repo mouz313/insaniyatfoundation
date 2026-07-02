@@ -14,6 +14,7 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Cache;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DonorController extends Controller
@@ -39,11 +40,37 @@ class DonorController extends Controller
             $query->where('status', $status);
         }
 
-        $donors = $query->latest()->get();
+        if ($cityId = $request->get('city_id')) {
+            $query->where('city_id', $cityId);
+        }
 
-        $cities = City::orderBy('name')->get();
+        $donors = $query->latest()->paginate(20)->withQueryString();
 
-        return view('admin.donors.index', compact('donors', 'cities'));
+        $stats = Cache::remember('donors.stats', 300, function () {
+            $total = Donor::count();
+            $activeCount = Donor::where('status', 'active')->count();
+            $eligibleNowCount = Donor::where('status', 'active')
+                ->where(function ($q) {
+                    $q->whereNull('last_donation_date')
+                      ->orWhere('last_donation_date', '<=', now()->subMonths(3));
+                })->count();
+            $cooldownCount = Donor::where('status', 'active')
+                ->whereNotNull('last_donation_date')
+                ->where('last_donation_date', '>', now()->subMonths(3))->count();
+            return compact('total', 'activeCount', 'eligibleNowCount', 'cooldownCount');
+        });
+        $total = $stats['total'];
+        $activeCount = $stats['activeCount'];
+        $eligibleNowCount = $stats['eligibleNowCount'];
+        $cooldownCount = $stats['cooldownCount'];
+
+        $cities = Cache::remember('cities.all', 3600, function () {
+            return City::orderBy('name')->get();
+        });
+
+        return view('admin.donors.index', compact(
+            'donors', 'cities', 'total', 'activeCount', 'eligibleNowCount', 'cooldownCount'
+        ));
     }
 
     public function create()
@@ -128,6 +155,12 @@ class DonorController extends Controller
         $initials = strtoupper(($donor->name[0] ?? 'X') . ($donor->father_name[0] ?? 'X'));
         $phoneLast5 = substr(preg_replace('/\D/', '', $donor->phone), -5);
         $regNo = sprintf('%s-%s-%05s', $cityCode, $initials, $phoneLast5);
+        $baseRegNo = $regNo;
+        $suffix = 0;
+        while (Donor::where('registration_no', $regNo)->where('id', '!=', $donor->id)->exists()) {
+            $suffix++;
+            $regNo = $baseRegNo . '-' . $suffix;
+        }
         $donor->update(['registration_no' => $regNo]);
 
         activity()->causedBy(auth()->user())->performedOn($donor)
@@ -252,6 +285,12 @@ class DonorController extends Controller
             $initials = strtoupper(($donor->name[0] ?? 'X') . ($donor->father_name[0] ?? 'X'));
             $phoneLast5 = substr(preg_replace('/\D/', '', $donor->phone), -5);
             $regNo = sprintf('%s-%s-%05s', $cityCode, $initials, $phoneLast5);
+            $baseRegNo = $regNo;
+            $suffix = 0;
+            while (Donor::where('registration_no', $regNo)->where('id', '!=', $donor->id)->exists()) {
+                $suffix++;
+                $regNo = $baseRegNo . '-' . $suffix;
+            }
             $donor->update(['registration_no' => $regNo]);
         }
 

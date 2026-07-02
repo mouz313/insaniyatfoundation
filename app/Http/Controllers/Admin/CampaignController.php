@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CampaignController extends Controller
 {
@@ -19,10 +20,18 @@ class CampaignController extends Controller
             });
         }
 
-        $total = Campaign::count();
-        $upcoming = Campaign::where('date', '>=', now())->count();
-        $past = Campaign::where('date', '<', now())->count();
-        $totalTargetUnits = Campaign::sum('target_units');
+        $stats = Cache::remember('campaigns.stats', 300, function () {
+            return Campaign::selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN date >= NOW() THEN 1 ELSE 0 END) as upcoming,
+                SUM(CASE WHEN date < NOW() THEN 1 ELSE 0 END) as past,
+                COALESCE(SUM(target_units), 0) as total_target_units
+            ')->first();
+        });
+        $total = $stats->total;
+        $upcoming = $stats->upcoming;
+        $past = $stats->past;
+        $totalTargetUnits = $stats->total_target_units;
 
         $campaigns = $query->latest()->paginate(20);
 

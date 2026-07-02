@@ -45,6 +45,7 @@ class MatchingService
                 $q->whereNull('last_donation_date')
                   ->orWhere('last_donation_date', '<=', now()->subMonths(3));
             })
+            ->take(200)
             ->get()
             ->map(function ($donor) use ($bloodRequest) {
                 $scores = $this->calculateScores($donor, $bloodRequest);

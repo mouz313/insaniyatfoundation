@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BloodDonationController;
 use App\Http\Controllers\Admin\BloodInventoryController;
 use App\Http\Controllers\Admin\BloodRequestController;
 use App\Http\Controllers\Admin\CallLogController;
+use App\Http\Controllers\Admin\FollowUpController;
 use App\Http\Controllers\Admin\MoneyDonationController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -50,6 +51,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('blood-requests/{bloodRequest}/match/{donor}/call', [MatchingController::class, 'logCall'])->name('blood-requests.match.call')->middleware('permission:blood-request-match');
 
     Route::resource('call-logs', CallLogController::class)->middleware('permission:call-log-create|call-log-edit|call-log-delete');
+
+    Route::resource('follow-ups', FollowUpController::class);
 
     Route::resource('money-donations', MoneyDonationController::class)->middleware('permission:money-donation-show|money-donation-create|money-donation-edit|money-donation-delete');
 

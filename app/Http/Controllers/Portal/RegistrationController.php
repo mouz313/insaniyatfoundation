@@ -33,7 +33,7 @@ class RegistrationController extends Controller
     private function maskCnic(?string $cnic): ?string
     {
         if (!$cnic) return null;
-        return preg_replace('/^(\d{5})-(\d{4})(\d{3})-(\d)$/', '$1-****-$$4', $cnic)
+        return preg_replace('/^(\d{5})-(\d{4})(\d{3})-(\d)$/', '$1-****-$4', $cnic)
             ?? substr($cnic, 0, 6) . '***';
     }
 
@@ -60,8 +60,8 @@ class RegistrationController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'father_name' => 'nullable|string|max:255',
-            'cnic' => 'required|string|max:20',
-            'phone' => 'required|string|max:20',
+            'cnic' => 'required|string|max:20|unique:donors,cnic',
+            'phone' => 'required|string|max:20|unique:donors,phone',
             'dob' => 'nullable|date',
             'gender' => 'nullable|in:male,female,other',
             'blood_group' => 'required|string|max:5',
@@ -84,12 +84,6 @@ class RegistrationController extends Controller
             'total_donations' => 'nullable|integer|min:0',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
-
-        $existingCnic = Donor::where('cnic', $data['cnic'])->first();
-        if ($existingCnic) {
-            return back()->with('error', 'A donor with this CNIC is already registered. Please contact our staff.')
-                ->withInput();
-        }
 
         $data['is_student'] = $request->boolean('is_student');
         $data['health_flags'] = $request->has('health_flags') ? $request->health_flags : [];
@@ -160,6 +154,12 @@ class RegistrationController extends Controller
         $initials = strtoupper(($donor->name[0] ?? 'X') . ($donor->father_name[0] ?? 'X'));
         $phoneLast5 = substr(preg_replace('/\D/', '', $donor->phone), -5);
         $regNo = sprintf('%s-%s-%05s', $cityCode, $initials, $phoneLast5);
+        $baseRegNo = $regNo;
+        $suffix = 0;
+        while (Donor::where('registration_no', $regNo)->where('id', '!=', $donor->id)->exists()) {
+            $suffix++;
+            $regNo = $baseRegNo . '-' . $suffix;
+        }
         $donor->update(['registration_no' => $regNo]);
 
         activity()->causedBy($donor)->performedOn($donor)

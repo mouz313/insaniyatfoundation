@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BloodInventory;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class BloodInventoryController extends Controller
 {
@@ -29,7 +30,9 @@ class BloodInventoryController extends Controller
 
         $items = $query->latest()->paginate(20);
 
-        $stockByGroup = BloodInventory::stockByGroup();
+        $stockByGroup = Cache::remember('blood-inventory.stock', 300, function () {
+            return BloodInventory::stockByGroup();
+        });
         $lowStock = BloodInventory::lowStockGroups(5, $stockByGroup);
         $totalAvailable = array_sum($stockByGroup);
 

@@ -8,6 +8,7 @@ use App\Models\BloodRequest;
 use App\Models\Donor;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CallLogController extends Controller
 {
@@ -34,12 +35,22 @@ class CallLogController extends Controller
         }
 
         $callLogs = $query->latest()->paginate(20);
-        $staff = User::orderBy('name')->get();
+        $staff = Cache::remember('staff.all', 3600, function () {
+            return User::orderBy('name')->get();
+        });
 
-        $totalCallLogs = CallLog::count();
-        $successCount = CallLog::where('outcome', 'success')->count();
-        $pendingCount = CallLog::where('outcome', 'pending')->count();
-        $failedCount = CallLog::where('outcome', 'failed')->count();
+        $stats = Cache::remember('call-logs.stats', 300, function () {
+            return CallLog::selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN outcome = ? THEN 1 ELSE 0 END) as success_count,
+                SUM(CASE WHEN outcome = ? THEN 1 ELSE 0 END) as pending_count,
+                SUM(CASE WHEN outcome IN (?, ?) THEN 1 ELSE 0 END) as failed_count
+            ', ['success', 'pending', 'failed', 'not_answered'])->first();
+        });
+        $totalCallLogs = $stats->total;
+        $successCount = $stats->success_count;
+        $pendingCount = $stats->pending_count;
+        $failedCount = $stats->failed_count;
 
         return view('admin.call-logs.index', compact('callLogs', 'staff', 'totalCallLogs', 'successCount', 'pendingCount', 'failedCount'));
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
@@ -44,7 +45,11 @@ class SettingController extends Controller
 
         foreach ($keys as $key) {
             if ($request->has($key)) {
-                Setting::updateOrCreate(['key' => $key], ['value' => $data[$key]]);
+                $value = $data[$key];
+                if (in_array($key, ['sms_api_key', 'sms_api_secret'], true) && !empty($value)) {
+                    $value = Crypt::encryptString($value);
+                }
+                Setting::updateOrCreate(['key' => $key], ['value' => $value]);
             }
         }
 

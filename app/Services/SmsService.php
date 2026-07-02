@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Models\Setting;
 use Twilio\Rest\Client as TwilioClient;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class SmsService
 {
@@ -17,9 +19,29 @@ class SmsService
     public function __construct()
     {
         $this->gateway = Setting::where('key', 'sms_gateway')->value('value');
-        $this->apiKey = Setting::where('key', 'sms_api_key')->value('value');
-        $this->apiSecret = Setting::where('key', 'sms_api_secret')->value('value');
+
+        $key = Setting::where('key', 'sms_api_key')->value('value');
+        $this->apiKey = $this->decryptIfNeeded($key);
+
+        $secret = Setting::where('key', 'sms_api_secret')->value('value');
+        $this->apiSecret = $this->decryptIfNeeded($secret);
+
         $this->senderId = Setting::where('key', 'sms_sender_id')->value('value');
+    }
+
+    protected function decryptIfNeeded(?string $value): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+        if (str_starts_with($value, 'eyJ')) {
+            try {
+                return Crypt::decryptString($value);
+            } catch (DecryptException) {
+                return $value;
+            }
+        }
+        return $value;
     }
 
     public function isConfigured(): bool

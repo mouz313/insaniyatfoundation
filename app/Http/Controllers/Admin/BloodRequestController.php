@@ -7,6 +7,7 @@ use App\Models\BloodRequest;
 use App\Models\City;
 use App\Models\Donor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class BloodRequestController extends Controller
 {
@@ -36,7 +37,9 @@ class BloodRequestController extends Controller
         }
 
         $bloodRequests = $query->latest()->paginate(20);
-        $cities = City::orderBy('name')->get();
+        $cities = Cache::remember('cities.all', 3600, function () {
+            return City::orderBy('name')->get();
+        });
 
         return view('admin.blood-requests.index', compact('bloodRequests', 'cities'));
     }

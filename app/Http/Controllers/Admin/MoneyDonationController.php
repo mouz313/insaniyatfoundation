@@ -9,6 +9,7 @@ use App\Models\Campaign;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class MoneyDonationController extends Controller
 {
@@ -35,12 +36,21 @@ class MoneyDonationController extends Controller
 
         $moneyDonations = $query->latest()->paginate(20);
 
-        $totalAmount = MoneyDonation::sum('amount');
-        $thisMonth = MoneyDonation::whereMonth('donation_date', now()->month)
-            ->whereYear('donation_date', now()->year)->sum('amount');
-        $thisYear = MoneyDonation::whereYear('donation_date', now()->year)->sum('amount');
-        $avgAmount = MoneyDonation::avg('amount');
-        $campaigns = Campaign::orderBy('name')->get();
+        $stats = Cache::remember('money-donations.stats', 300, function () {
+            return MoneyDonation::selectRaw('
+                COALESCE(SUM(amount), 0) as total_amount,
+                COALESCE(AVG(amount), 0) as avg_amount,
+                COALESCE(SUM(CASE WHEN YEAR(donation_date) = ? AND MONTH(donation_date) = ? THEN amount ELSE 0 END), 0) as this_month,
+                COALESCE(SUM(CASE WHEN YEAR(donation_date) = ? THEN amount ELSE 0 END), 0) as this_year
+            ', [now()->year, now()->month, now()->year])->first();
+        });
+        $totalAmount = $stats->total_amount;
+        $thisMonth = $stats->this_month;
+        $thisYear = $stats->this_year;
+        $avgAmount = $stats->avg_amount;
+        $campaigns = Cache::remember('campaigns.all', 3600, function () {
+            return Campaign::orderBy('name')->get();
+        });
 
         return view('admin.money-donations.index', compact(
             'moneyDonations', 'totalAmount', 'thisMonth', 'thisYear', 'avgAmount', 'campaigns'
