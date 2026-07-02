@@ -235,6 +235,82 @@ A donor is eligible to donate blood when all conditions are met:
 - No flagged health issues (recent illness, pregnancy, recent tattoo, medication, chronic disease, high-risk behavior)
 - At least 3 months since last donation
 
+## Deployment Checklist
+
+### Environment (`.env` on server — not in git)
+- `APP_ENV=production`
+- `APP_DEBUG=false` — critical: prevents stack trace leaks
+- `APP_KEY` — generate on production server: `php artisan key:generate`
+- `APP_URL` — set to production domain (`https://...`)
+- `LOG_LEVEL=error` — `debug` in production logs sensitive data
+- `SESSION_ENCRYPT=true`
+- `DB_CONNECTION=mysql` — SQLite is dev-only
+- Dedicated DB user (not root) with limited privileges
+- SMS gateway keys set via admin panel (stored in DB, not `.env`)
+
+### HTTPS
+- SSL certificate (Let's Encrypt via Certbot)
+- HTTPS forced in `bootstrap/app.php` when `APP_ENV=production`
+
+### Queue Worker (background jobs)
+Install Supervisor and create `/etc/supervisor/conf.d/donation-worker.conf`:
+```ini
+[program:donation-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /path/to/donation/artisan queue:work --sleep=3 --tries=3
+autostart=true
+autorestart=true
+numprocs=2
+user=www-data
+redirect_stderr=true
+stdout_logfile=/path/to/donation/storage/logs/worker.log
+```
+Then: `supervisorctl reread && supervisorctl update && supervisorctl start donation-worker:*`
+
+### Scheduled Tasks (cron)
+Add to server crontab:
+```cron
+* * * * * cd /path/to/donation && php artisan schedule:run >> /dev/null 2>&1
+```
+Currently scheduled commands:
+- `app:database-backup --keep=10` — daily at 02:00
+- `app:process-donor-follow-ups` — daily at 03:00
+- `app:sync-donor-badges` — weekly on Sunday at 04:00
+
+### Error Monitoring
+- Sentry installed (`sentry/sentry-laravel`). Set `SENTRY_LARAVEL_DSN` in `.env`.
+- Free tier sufficient for small NGO deployments.
+
+### Database
+- Run: `php artisan migrate --force`
+- Key indexed columns: `donors.cnic`, `donors.phone`, `donors.blood_group`, `donors.city_id`, `donors.status`
+- Automated daily backups via `app:database-backup` command
+- Test backup restoration before relying on it
+
+### File Permissions
+```bash
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+php artisan storage:link
+```
+
+### Build & Optimize
+```bash
+composer install --optimize-autoloader --no-dev
+npm install && npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+Re-run these commands on every deploy.
+
+### Smoke Test (immediately after deploy)
+- Submit public registration form
+- Log into admin panel, verify dashboard loads
+- Test SMS delivery (if gateway configured)
+- Test PDF exports (certificate, donor card, reports)
+- Hit `/up` health check — expect 200
+
 ## License
 
 MIT

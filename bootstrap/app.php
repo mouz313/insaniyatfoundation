@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\LocalizeAdminlteMenu::class,
         ]);
 
+        if (env('APP_ENV') === 'production') {
+            $middleware->trustProxies(at: '*');
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         $middleware->alias([
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,

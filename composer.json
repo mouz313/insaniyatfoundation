@@ -14,6 +14,7 @@
         "laravel/tinker": "^3.0",
         "maatwebsite/excel": "3.1.69",
         "phpoffice/phpword": "*",
+        "sentry/sentry-laravel": "^4.26",
         "simplesoftwareio/simple-qrcode": "*",
         "spatie/laravel-activitylog": "*",
         "spatie/laravel-permission": "*",
