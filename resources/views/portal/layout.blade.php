@@ -37,7 +37,7 @@
                         <a class="nav-link" href="{{ route('portal.registration.create') }}"><i class="fas fa-user-plus mr-1"></i> Register</a>
                     </li>
                     <li class="nav-item {{ request()->routeIs('portal.verify') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('portal.verify', 0) }}"><i class="fas fa-id-card mr-1"></i> Verify</a>
+                        <a class="nav-link" href="{{ route('portal.verify') }}"><i class="fas fa-id-card mr-1"></i> Verify</a>
                     </li>
                     <li class="nav-item {{ request()->routeIs('portal.availability') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('portal.availability') }}"><i class="fas fa-search mr-1"></i> Availability</a>

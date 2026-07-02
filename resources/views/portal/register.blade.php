@@ -366,7 +366,7 @@
         <div class="reg-footer-card mt-4">
             <i class="fas fa-id-card me-1" style="color:var(--primary);"></i>
             Already registered?
-            <a href="{{ route('portal.verify', 0) }}">Verify your card</a>
+            <a href="{{ route('portal.verify') }}">Verify your card</a>
             &bull;
             <a href="{{ route('portal.availability') }}">Check blood availability</a>
         </div>

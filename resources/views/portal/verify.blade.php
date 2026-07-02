@@ -105,7 +105,7 @@
                         <button onclick="window.print()" class="btn btn-success rounded-pill px-4 py-2" style="font-weight:600;">
                             <i class="fas fa-print mr-1"></i> Print / Download
                         </button>
-                        <a href="{{ route('portal.verify', 0) }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 ml-2" style="font-weight:600;">
+                        <a href="{{ route('portal.verify') }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 ml-2" style="font-weight:600;">
                             <i class="fas fa-search mr-1"></i> New Search
                         </a>
                     </div>

@@ -57,7 +57,7 @@ class DonorCardController extends Controller
                 'name' => $donor->name,
                 'blood_group' => $donor->blood_group,
                 'reg_no' => $donor->registration_no,
-                'verify_url' => route('portal.verify', $donor->id),
+                'verify_url' => route('portal.verify') . '?query=' . urlencode($donor->cnic),
             ]);
             $qrCodes[$donor->id] = base64_encode(QrCode::format('svg')->size(150)->generate($payload));
         }

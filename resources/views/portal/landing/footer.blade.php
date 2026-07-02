@@ -48,7 +48,7 @@
                     <a href="#campaigns" class="footer-link">Campaigns</a>
                     <a href="#how-it-works" class="footer-link">How It Works</a>
                     <a href="#testimonials" class="footer-link">Stories</a>
-                    <a href="{{ route('portal.verify', 0) }}" class="footer-link"><i class="fas fa-id-card me-1"></i> Verify Donor</a>
+                    <a href="{{ route('portal.verify') }}" class="footer-link"><i class="fas fa-id-card me-1"></i> Verify Donor</a>
                     <a href="{{ route('portal.availability') }}" class="footer-link"><i class="fas fa-search me-1"></i> Blood Availability</a>
                 </div>
             </div>

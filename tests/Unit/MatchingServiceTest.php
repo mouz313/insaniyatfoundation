@@ -202,7 +202,7 @@ class MatchingServiceTest extends TestCase
         $this->assertEquals(30 + 20 + 20 + 7 + 15, $scores['total']);
     }
 
-    /** @test】
+    /** @test */
     public function findMatches_returns_only_eligible_donors()
     {
         $city = City::factory()->create();

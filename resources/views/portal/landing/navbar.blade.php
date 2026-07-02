@@ -18,7 +18,7 @@
                 <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
                 <li class="nav-item"><a class="nav-link" href="#testimonials">Stories</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('portal.verify', 0) }}"><i class="fas fa-id-card me-1"></i> Verify</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('portal.verify') }}"><i class="fas fa-id-card me-1"></i> Verify</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('portal.availability') }}"><i class="fas fa-search me-1"></i> Availability</a></li>
             </ul>
             <a href="{{ $settings['hero_cta_url'] ?? route('portal.registration.create') }}" class="btn btn-nav-donate"><i class="fas fa-tint me-1"></i> Donate</a>
