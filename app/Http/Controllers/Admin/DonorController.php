@@ -157,7 +157,7 @@ class DonorController extends Controller
             'id' => $donor->id,
             'name' => $donor->name,
             'blood_group' => $donor->blood_group,
-            'verify_url' => route('portal.verify', $donor->id),
+            'cnic' => substr($donor->cnic, 0, 5) . '-***-*',
         ])));
 
         return view('admin.donors.show', compact('donor', 'callLogs', 'annualSummary', 'eligibilityReasons', 'elgStatus', 'donorQr'));
@@ -277,8 +277,30 @@ class DonorController extends Controller
         $donors = Donor::where('cnic', 'like', "%{$q}%")
             ->orWhere('phone', 'like', "%{$q}%")
             ->limit(10)
-            ->get(['id', 'name', 'cnic', 'phone', 'blood_group']);
+            ->get(['id', 'name', 'cnic', 'phone', 'blood_group'])
+            ->map(function ($donor) {
+                $donor->cnic = $this->maskCnic($donor->cnic);
+                $donor->phone = $this->maskPhone($donor->phone);
+                return $donor;
+            });
         return response()->json($donors);
+    }
+
+    private function maskCnic(?string $cnic): ?string
+    {
+        if (!$cnic) return null;
+        return preg_replace('/^(\d{5})-(\d{4})(\d{3})-(\d)$/', '$1-****-$4', $cnic)
+            ?? substr($cnic, 0, 6) . '***';
+    }
+
+    private function maskPhone(?string $phone): ?string
+    {
+        if (!$phone) return null;
+        $digits = preg_replace('/\D/', '', $phone);
+        if (strlen($digits) >= 7) {
+            return substr($phone, 0, 4) . '***' . substr($phone, -4);
+        }
+        return substr($phone, 0, 3) . '***';
     }
 
     public function checkDuplicate(Request $request)
@@ -294,6 +316,7 @@ class DonorController extends Controller
         $match = $query->first();
 
         if ($match) {
+            $match->makeVisible('cnic');
             return response()->json([
                 'duplicate' => true,
                 'donor' => ['id' => $match->id, 'name' => $match->name, 'cnic' => $match->cnic, 'phone' => $match->phone],

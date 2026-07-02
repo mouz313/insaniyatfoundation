@@ -18,31 +18,26 @@ class VerificationController extends Controller
         return view('portal.referrer', compact('donor'));
     }
 
-    public function show($id, Request $request)
+    public function show(Request $request)
     {
-        if ($id == 0) {
-            $query = $request->input('query');
+        $query = $request->input('query');
 
-            if ($query) {
-                $donor = Donor::with('city', 'area')
-                    ->where(function ($q) use ($query) {
-                        $q->where('name', 'like', "%{$query}%")
-                          ->orWhere('phone', 'like', "%{$query}%")
-                          ->orWhere('cnic', 'like', "%{$query}%");
-                    })
-                    ->first();
+        if ($query) {
+            $donor = Donor::with('city', 'area')
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%")
+                      ->orWhere('phone', 'like', "%{$query}%")
+                      ->orWhere('cnic', 'like', "%{$query}%");
+                })
+                ->first();
 
-                if (!$donor) {
-                    return back()->with('error', 'No donor found matching your search.')->withInput();
-                }
-
-                return view('portal.verify', compact('donor'));
+            if (!$donor) {
+                return back()->with('error', 'No donor found matching your search.')->withInput();
             }
 
-            return view('portal.verify', ['donor' => null]);
+            return view('portal.verify', compact('donor'));
         }
 
-        $donor = Donor::with('city', 'area')->findOrFail($id);
-        return view('portal.verify', compact('donor'));
+        return view('portal.verify', ['donor' => null]);
     }
 }

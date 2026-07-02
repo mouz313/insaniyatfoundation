@@ -19,6 +19,11 @@ class Donor extends Model
         'status', 'last_donation_date', 'card_printed_at', 'total_donations'
     ];
 
+    protected $hidden = [
+        'cnic',
+        'health_flags',
+    ];
+
     protected $casts = [
         'dob' => 'date',
         'last_donation_date' => 'date',

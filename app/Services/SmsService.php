@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use Twilio\Rest\Client as TwilioClient;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SmsService
 {
@@ -27,19 +30,17 @@ class SmsService
     public function send(string $phone, string $message): bool
     {
         if (!$this->isConfigured()) {
+            Log::warning('SMS not sent: gateway not configured', ['phone' => $phone]);
             return false;
         }
 
-        // Placeholder for SMS gateway integration
-        // Supported gateways: Twilio, BulkSMS.pk, Zong/Telenor API
         switch ($this->gateway) {
             case 'twilio':
                 return $this->sendViaTwilio($phone, $message);
             case 'bulksms':
                 return $this->sendViaBulkSms($phone, $message);
             default:
-                // Log the message for now
-                logger()->info("SMS to {$phone}: {$message}");
+                Log::info("SMS logged (no gateway): to {$phone}: {$message}");
                 return true;
         }
     }
@@ -57,19 +58,44 @@ class SmsService
 
     protected function sendViaTwilio(string $phone, string $message): bool
     {
-        // TODO: Implement Twilio SMS integration
-        // $twilio = new \Twilio\Rest\Client($this->apiKey, $this->apiSecret);
-        // $twilio->messages->create($phone, ['from' => $this->senderId, 'body' => $message]);
-        logger()->info("Twilio SMS to {$phone}: {$message}");
-        return true;
+        try {
+            $client = new TwilioClient($this->apiKey, $this->apiSecret);
+            $from = $this->senderId ?? config('services.twilio.from');
+
+            $client->messages->create($phone, [
+                'from' => $from,
+                'body' => $message,
+            ]);
+
+            Log::info("Twilio SMS sent to {$phone}");
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Twilio SMS failed to {$phone}: " . $e->getMessage());
+            return false;
+        }
     }
 
     protected function sendViaBulkSms(string $phone, string $message): bool
     {
-        // TODO: Implement BulkSMS.pk integration
-        // $url = "https://bulksms.pk/api/send?api_key={$this->apiKey}&mobile={$phone}&message=" . urlencode($message) . "&sender={$this->senderId}";
-        // Http::get($url);
-        logger()->info("BulkSMS to {$phone}: {$message}");
-        return true;
+        try {
+            $url = "https://bulksms.pk/api/send";
+            $response = Http::get($url, [
+                'api_key' => $this->apiKey,
+                'mobile' => $phone,
+                'message' => $message,
+                'sender' => $this->senderId,
+            ]);
+
+            if ($response->successful()) {
+                Log::info("BulkSMS sent to {$phone}");
+                return true;
+            }
+
+            Log::error("BulkSMS failed to {$phone}: " . $response->body());
+            return false;
+        } catch (\Exception $e) {
+            Log::error("BulkSMS exception to {$phone}: " . $e->getMessage());
+            return false;
+        }
     }
 }

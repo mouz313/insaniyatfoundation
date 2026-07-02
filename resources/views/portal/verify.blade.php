@@ -32,7 +32,7 @@
 
         <div class="card shadow-sm border-0 rounded-lg mb-4 no-print" style="border-top:4px solid #28a745;">
             <div class="card-body p-4">
-                <form method="GET" action="{{ route('portal.verify', 0) }}">
+                <form method="GET" action="{{ route('portal.verify') }}">
                     <div class="row align-items-end">
                         <div class="col-md-8 mb-3 mb-md-0">
                             <label class="font-weight-bold text-muted small">Search by Name, Phone, or CNIC</label>

@@ -103,11 +103,11 @@ Route::prefix('portal')->name('portal.')->group(function () {
     Route::get('register', [RegistrationController::class, 'create'])->name('registration.create');
     Route::post('register', [RegistrationController::class, 'store'])->name('registration.store');
     Route::get('register/{donor}/confirm', [RegistrationController::class, 'confirm'])->name('registration.confirm');
-    Route::get('verify/{donor}', [VerificationController::class, 'show'])->name('verify');
+    Route::get('verify', [VerificationController::class, 'show'])->name('verify')->middleware('throttle:10,1');
     Route::get('availability', [BloodAvailabilityController::class, 'index'])->name('availability');
 
-    Route::get('donors/search-referrer', [RegistrationController::class, 'searchReferrer'])->name('donors.search-referrer');
-    Route::get('referrer/{cnic}', [VerificationController::class, 'referrer'])->name('referrer');
+    Route::get('donors/search-referrer', [RegistrationController::class, 'searchReferrer'])->name('donors.search-referrer')->middleware('throttle:30,1');
+    Route::get('referrer/{cnic}', [VerificationController::class, 'referrer'])->name('referrer')->middleware('throttle:10,1');
     Route::get('areas/by-city/{cityId}', [\App\Http\Controllers\Admin\AreaController::class, 'getByCity'])->name('areas.by-city');
 });
 
