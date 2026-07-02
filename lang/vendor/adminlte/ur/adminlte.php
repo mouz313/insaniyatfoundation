@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'full_name' => 'مکمل نام',
+    'email' => 'ای میل',
+    'password' => 'پاس ورڈ',
+    'retype_password' => 'پاس ورڈ دوبارہ درج کریں',
+    'remember_me' => 'مجھے یاد رکھیں',
+    'register' => 'رجسٹر کریں',
+    'register_a_new_membership' => 'نئی رکنیت رجسٹر کریں',
+    'i_forgot_my_password' => 'میں اپنا پاس ورڈ بھول گیا',
+    'i_already_have_a_membership' => 'میرے پاس پہلے سے رکنیت ہے',
+    'sign_in' => 'سائن ان',
+    'log_out' => 'لاگ آؤٹ',
+    'toggle_navigation' => 'نیویگیشن ٹوگل کریں',
+    'login_message' => 'اپنا سیشن شروع کرنے کے لیے سائن ان کریں',
+    'register_message' => 'نئی رکنیت رجسٹر کریں',
+    'password_reset_message' => 'پاس ورڈ ری سیٹ',
+    'reset_password' => 'پاس ورڈ ری سیٹ کریں',
+    'send_password_reset_link' => 'پاس ورڈ ری سیٹ لنک بھیجیں',
+    'verify_message' => 'آپ کے اکاؤنٹ کی تصدیق درکار ہے',
+    'verify_email_sent' => 'آپ کے ای میل ایڈریس پر ایک نیا تصدیقی لنک بھیجا گیا ہے',
+    'verify_check_your_email' => 'براہ کرم آگے بڑھنے سے پہلے تصدیقی لنک کے لیے اپنا ای میل چیک کریں',
+    'verify_if_not_recieved' => 'اگر آپ کو ای میل موصول نہیں ہوا',
+    'verify_request_another' => 'دوبارہ لنک کی درخواست کرنے کے لیے یہاں کلک کریں',
+    'confirm_password_message' => 'براہ کرم جاری رکھنے کے لیے اپنے پاس ورڈ کی تصدیق کریں',
+    'remember_me_hint' => 'مجھے غیر معینہ مدت تک تصدیق شدہ رکھیں یا جب تک میں دستی طور پر لاگ آؤٹ نہ کروں',
+];
