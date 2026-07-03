@@ -1,4 +1,4 @@
-<section class="stats-section" style="background:#fff;padding:50px 0;border-bottom:1px solid #eee;">
+<section class="stats-section reveal" style="background:#fff;padding:50px 0;border-bottom:1px solid #eee;">
     <div class="container">
         <div class="row text-center g-4">
             @php

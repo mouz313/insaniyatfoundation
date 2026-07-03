@@ -1,4 +1,4 @@
-<section id="testimonials" class="section-padding" style="background:#fff;">
+<section id="testimonials" class="section-padding reveal" style="background:#fff;">
     <div class="container">
         <div class="text-center mb-4">
             <div class="section-tag"><i class="fas fa-quote-left me-2"></i>Stories</div>
@@ -24,7 +24,7 @@
                                                 </div>
                                                 <h6 class="mb-1" style="color:var(--secondary);font-weight:700;font-size:14px;">{{ $story->name }}</h6>
                                                 <div style="font-size:11px;color:#888;margin-bottom:8px;">
-                                                    @if($story->blood_group)<span class="badge bg-danger me-1" style="border-radius:50px;font-size:10px;">{{ $story->blood_group }}</span>@endif
+                                                    @if($story->blood_group)<span class="badge" style="background:var(--primary);border-radius:50px;font-size:10px;color:#fff;">{{ $story->blood_group }}</span>@endif
                                                     @if($story->city)<span><i class="fas fa-map-marker-alt me-1" style="color:var(--primary);"></i>{{ $story->city }}</span>@endif
                                                 </div>
                                                 <i class="fas fa-quote-left" style="font-size:16px;color:rgba(220,53,69,0.15);display:block;margin-bottom:4px;"></i>

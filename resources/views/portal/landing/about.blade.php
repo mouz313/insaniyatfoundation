@@ -1,4 +1,4 @@
-<section id="about" class="section-padding" style="background:#fff;">
+<section id="about" class="section-padding reveal" style="background:#fff;">
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">

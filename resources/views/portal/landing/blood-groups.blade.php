@@ -1,4 +1,4 @@
-<section id="blood-groups" class="section-padding" style="background:#f8f9fa;">
+<section id="blood-groups" class="section-padding reveal" style="background:#f8f9fa;">
     <div class="container">
         <div class="text-center mb-5">
             <div class="section-tag"><i class="fas fa-tint me-2"></i>Availability</div>

@@ -1,4 +1,4 @@
-<section id="campaigns" class="section-padding" style="background:#fff;">
+<section id="campaigns" class="section-padding reveal" style="background:#fff;">
     <div class="container">
         <div class="text-center mb-5">
             <div class="section-tag"><i class="fas fa-calendar-alt me-2"></i>Events</div>

@@ -9,13 +9,43 @@
         </div>
         <div>
             <h1 class="mb-0" style="font-weight: 600;">Cities</h1>
-            <small class="text-muted"><i class="fas fa-fw fa-database"></i> {{ $cities->total() }} total</small>
+            <small class="text-muted"><i class="fas fa-fw fa-database"></i> <span id="totalCities">{{ $cities->total() }}</span> total</small>
         </div>
     </div>
 @stop
 
 @section('content')
     <div class="row">
+        @if($topCities->isNotEmpty())
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm border-0 rounded-lg" style="border-top: 3px solid #ffc107 !important;">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="fas fa-trophy text-warning"></i> Top 3 Cities with Highest Donors</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach($topCities as $i => $city)
+                                <div class="col-md-4 mb-2 mb-md-0">
+                                    <div class="d-flex align-items-center p-3 rounded @if($i == 0) bg-warning text-white @else bg-light @endif" style="height: 100%;">
+                                        <div class="mr-3 text-center" style="min-width: 40px;">
+                                            <span style="font-size: 24px; font-weight: 800;">
+                                                @if($i == 0) <i class="fas fa-crown"></i>
+                                                @elseif($i == 1) <i class="fas fa-medal"></i>
+                                                @else <i class="fas fa-award"></i> @endif
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; font-size: 16px;">{{ $city->name }}</div>
+                                            <small><i class="fas fa-users"></i> {{ $city->donors_count }} donors</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
         <div class="col-md-5">
             <div class="card shadow-sm border-0 rounded-lg" style="border-top: 3px solid #28a745 !important;">
                 <div class="card-header bg-white">
@@ -33,7 +63,17 @@
         <div class="col-md-7">
             <div class="card shadow-sm border-0 rounded-lg">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-city text-secondary"></i> All Cities</h5>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <h5 class="mb-0"><i class="fas fa-city text-secondary"></i> All Cities</h5>
+                        <div style="min-width: 200px;">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input type="text" id="searchCity" class="form-control" placeholder="Search by name..." value="{{ request('search') }}">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -46,42 +86,21 @@
                                     <th width="120" class="text-center">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($cities as $city)
-                                    <tr>
-                                        <td class="align-middle"><span class="text-muted">#{{ $city->id }}</span></td>
-                                        <td class="align-middle" style="font-weight: 500;">{{ $city->name }}</td>
-                                        <td class="align-middle"><span class="badge badge-secondary" style="border-radius: 20px; padding: 4px 12px;">{{ $city->areas_count }}</span></td>
-                                        <td class="align-middle text-center">
-                                            <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-outline-warning" title="Edit" style="border-radius: 6px 0 0 6px;" onclick="editCity({{ $city->id }}, '{{ $city->name }}')"><i class="fas fa-edit"></i></button>
-                                                <form action="{{ route('admin.cities.destroy', $city->id) }}" method="POST" style="display:inline;">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="btn btn-outline-danger" title="Delete" style="border-radius: 0 6px 6px 0;" onclick="return confirm('Delete this city?')"><i class="fas fa-trash"></i></button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center py-5">
-                                            <i class="fas fa-city text-muted" style="font-size: 48px; opacity: 0.3;"></i>
-                                            <p class="text-muted mt-2 mb-0">No cities found.</p>
-                                        </td>
-                                    </tr>
-                                @endforelse
+                            <tbody id="citiesTableBody">
+                                @include('admin.cities._table')
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-                    <small class="text-muted">Showing {{ $cities->firstItem() ?? 0 }} - {{ $cities->lastItem() ?? 0 }} of {{ $cities->total() }}</small>
-                    {{ $cities->appends(request()->query())->links() }}
+                    <small class="text-muted">Showing <span id="firstItem">{{ $cities->firstItem() ?? 0 }}</span> - <span id="lastItem">{{ $cities->lastItem() ?? 0 }}</span> of <span id="totalCitiesFooter">{{ $cities->total() }}</span></small>
+                    <div id="paginationLinks">
+                        {{ $cities->appends(request()->query())->links('pagination::bootstrap-4') }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="editCityModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -106,11 +125,33 @@
 
 @section('js')
 <script>
+    let searchTimeout;
+
     function editCity(id, name){
         $('#editCityName').val(name);
         $('#editCityForm').attr('action', '{{ url('admin/cities') }}/' + id);
         $('#editCityModal').modal('show');
     }
+
+    $('#searchCity').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        const search = $(this).val();
+        searchTimeout = setTimeout(function() {
+            $.ajax({
+                url: '{{ route('admin.cities.index') }}',
+                type: 'GET',
+                data: { search: search },
+                dataType: 'json',
+                success: function(res) {
+                    $('#citiesTableBody').html(res.html);
+                    $('#paginationLinks').html(res.pagination);
+                    $('#firstItem').text(res.firstItem);
+                    $('#lastItem').text(res.lastItem);
+                    $('#totalCities, #totalCitiesFooter').text(res.total);
+                }
+            });
+        }, 400);
+    });
 </script>
 @stop
 

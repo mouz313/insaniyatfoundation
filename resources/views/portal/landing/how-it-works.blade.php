@@ -1,4 +1,4 @@
-<section id="how-it-works" class="section-padding position-relative" style="background:#f8f9fa;">
+<section id="how-it-works" class="section-padding position-relative reveal" style="background:#f8f9fa;">
     <div class="step-connector d-none d-lg-block"></div>
     <div class="container">
         <div class="text-center mb-5">
