@@ -158,51 +158,18 @@
     @yield('adminlte_css')
 
     <style>
-        .main-sidebar .nav-sidebar .nav-item > .nav-link {
-            border-radius: 8px;
-            margin: 2px 8px;
-            transition: all 0.2s ease;
-        }
-        .main-sidebar .nav-sidebar .nav-item > .nav-link:hover {
-            background: rgba(255,255,255,0.06);
-            transform: translateX(3px);
-        }
-        .main-sidebar .nav-sidebar .nav-item > .nav-link.active {
-            background: linear-gradient(135deg, #dc3545, #e4606d) !important;
-            box-shadow: 0 4px 15px rgba(220,53,69,0.3);
-        }
-        .main-sidebar .nav-sidebar .nav-item > .nav-link .nav-icon {
-            transition: transform 0.2s ease;
-        }
-        .main-sidebar .nav-sidebar .nav-item > .nav-link:hover .nav-icon {
-            transform: scale(1.15);
-        }
-        .main-sidebar .nav-sidebar .nav-treeview .nav-item .nav-link {
-            border-radius: 6px;
-            margin: 1px 8px 1px 20px;
-            padding: 6px 12px;
-            font-size: 13px;
-            transition: all 0.15s ease;
-        }
-        .main-sidebar .nav-sidebar .nav-treeview .nav-item .nav-link:hover {
-            background: rgba(255,255,255,0.05);
-            padding-left: 16px;
-        }
-        .main-sidebar .nav-sidebar .nav-treeview .nav-item .nav-link.active {
-            background: rgba(220,53,69,0.15) !important;
-            border-left: 3px solid #dc3545;
-            padding-left: 13px;
-        }
-        .main-sidebar .brand-link {
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .main-sidebar .brand-text {
-            font-weight: 700;
-            letter-spacing: 0.5px;
+        .main-sidebar .sidebar-label {
+            padding: 16px 16px 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            pointer-events: none;
+            user-select: none;
         }
         .nav-item-dashboard .nav-link {
-            background: linear-gradient(135deg, rgba(220,53,69,0.12), rgba(220,53,69,0.05));
-            border: 1px solid rgba(220,53,69,0.1);
+            border: 1px solid rgba(40,167,69,0.1);
         }
         .nav-item-dashboard .nav-link.active {
             border-color: transparent;

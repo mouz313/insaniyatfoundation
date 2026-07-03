@@ -1,8 +1,13 @@
-.main-sidebar { background: #1A6B2E !important; }
-.brand-link { background: #145A26 !important; }
-.nav-sidebar .nav-link.active { background: #145A26 !important; }
-.nav-sidebar .nav-link:hover:not(.active) { background: rgba(255,255,255,0.08) !important; }
+/* ── Brand Tokens ── */
+:root {
+    --primary: #1A6B2E;
+    --primary-dark: #145A26;
+    --primary-light: #28a745;
+    --secondary: #1a1a2e;
+    --accent: #1565A8;
+}
 
+/* ── Buttons ── */
 .btn-primary { background: #1A6B2E !important; border-color: #145A26 !important; }
 .btn-primary:hover { background: #145A26 !important; border-color: #0F4F8A !important; }
 .btn-primary:focus, .btn-primary.focus { box-shadow: 0 0 0 0.2rem rgba(26,107,46,0.5) !important; }
@@ -12,17 +17,16 @@
 .btn-info:hover { background: #0F4F8A !important; border-color: #0A3A6A !important; }
 .btn-info:focus, .btn-info.focus { box-shadow: 0 0 0 0.2rem rgba(21,101,168,0.5) !important; }
 
-.sidebar-dark-danger .nav-sidebar > .nav-item > .nav-link.active { background: #145A26 !important; }
-.sidebar-dark-danger .nav-sidebar > .nav-item > .nav-link:hover { background: rgba(255,255,255,0.08) !important; }
-.sidebar-dark-danger .nav-sidebar .nav-item > .nav-treeview { background: rgba(0,0,0,0.1) !important; }
-.sidebar-dark-danger .nav-sidebar .nav-item > .nav-treeview .nav-link.active { background: #145A26 !important; }
-
+/* ── Danger mapped to brand (for backwards compat) ── */
 .bg-danger { background: #1A6B2E !important; }
 .btn-danger { background: #1A6B2E !important; border-color: #145A26 !important; }
 .btn-danger:hover { background: #145A26 !important; }
 .text-danger { color: #1A6B2E !important; }
+
+/* ── Links ── */
 a { color: #1A6B2E; }
 a:hover { color: #145A26; }
 
+/* ── Cards ── */
 .card-primary.card-outline { border-top-color: #1A6B2E !important; }
 .text-primary { color: #1A6B2E !important; }

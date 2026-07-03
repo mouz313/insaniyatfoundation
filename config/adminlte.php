@@ -135,7 +135,7 @@ return [
 
     'usermenu_enabled' => true,
     'usermenu_header' => true,
-    'usermenu_header_class' => 'bg-gradient-danger',
+    'usermenu_header_class' => 'bg-gradient-success',
     'usermenu_image' => true,
     'usermenu_desc' => true,
     'usermenu_profile_url' => 'admin.profile',
@@ -196,7 +196,7 @@ return [
     'classes_content_wrapper' => '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-danger',
+    'classes_sidebar' => 'sidebar-dark',
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-white navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
@@ -317,13 +317,15 @@ return [
             'icon' => 'fas fa-fw fa-user',
             'type' => 'navbar-user',
         ],
-        // Sidebar items — collapsible grouped menu
+        // Sidebar items — grouped with section headers
+        ['header' => 'general'],
         [
             'text' => 'Dashboard',
             'icon' => 'fas fa-fw fa-tachometer-alt',
             'route' => 'admin.dashboard',
             'classes' => 'nav-item-dashboard',
         ],
+        ['header' => 'management'],
         [
             'text' => 'Donors',
             'icon' => 'fas fa-fw fa-users',
@@ -383,6 +385,7 @@ return [
                 ],
             ],
         ],
+        ['header' => 'insights'],
         [
             'text' => 'Analytics',
             'icon' => 'fas fa-fw fa-chart-line',
@@ -400,6 +403,7 @@ return [
                 ],
             ],
         ],
+        ['header' => 'system'],
         [
             'text' => 'Administration',
             'icon' => 'fas fa-fw fa-shield-alt',
