@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendDonorSmsJob;
 use App\Models\Donor;
 use App\Models\City;
 use App\Models\Area;
@@ -164,6 +165,9 @@ class RegistrationController extends Controller
 
         activity()->causedBy($donor)->performedOn($donor)
             ->log('self_registered');
+
+        $welcomeMessage = "Dear {$donor->name}, welcome to the blood donation community! Your registration is complete. Your Donor ID: {$donor->registration_no}. Thank you for your commitment to saving lives.";
+        SendDonorSmsJob::dispatch($donor->phone, $welcomeMessage, 'registration_welcome:' . $donor->id);
 
         return redirect()->route('portal.registration.confirm', $donor)
             ->with('success', 'Registration submitted successfully!');

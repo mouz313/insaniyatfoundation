@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\SendDonorSmsJob;
 use App\Models\BloodRequest;
 use App\Models\Donor;
 use App\Models\FollowUp;
@@ -69,9 +70,12 @@ class ProcessDonorFollowUps extends Command
                 'scheduled_at' => now(),
                 'status' => 'pending',
             ]);
+
+            $reminderMessage = "Dear {$donor->name}, you are now eligible to donate blood again! Your last donation was {$donor->last_donation_date?->format('Y-m-d')}. Please visit your nearest blood bank to save a life.";
+            SendDonorSmsJob::dispatch($donor->phone, $reminderMessage, 'eligible_reminder:' . $donor->id);
         }
 
-        $this->line("Created {$donors->count()} eligible reminder follow-ups.");
+        $this->line("Created {$donors->count()} eligible reminder follow-ups and dispatched SMS.");
     }
 
     private function processCallBacks(): void

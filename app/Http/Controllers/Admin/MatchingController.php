@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendDonorSmsJob;
 use App\Models\BloodRequest;
 use App\Models\CallLog;
 use App\Models\Donor;
@@ -37,6 +38,9 @@ class MatchingController extends Controller
 
         if ($request->outcome === 'donor_found') {
             $bloodRequest->update(['status' => 'resolved']);
+
+            $message = "Dear {$donor->name}, a blood request for {$bloodRequest->blood_group} is confirmed at {$bloodRequest->hospital}. Patient: {$bloodRequest->patient_name}. Contact: {$bloodRequest->contact_phone}. Please visit the nearest blood bank.";
+            SendDonorSmsJob::dispatch($donor->phone, $message, 'donor_match:' . $bloodRequest->id);
         }
 
         activity()->causedBy(auth()->user())

@@ -77,80 +77,28 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap">
         <style>
-            /* ── Direction ── */
-            html, body { direction: rtl !important; }
-
-            /* ── Urdu font for all visible text ── */
-            body, span, p, a, h1, h2, h3, h4, h5, h6, label, td, th,
-            input, textarea, select, button, .nav-link p, .nav-link,
-            .dropdown-item, .card-title, .card-text,
-            .user-panel-name, .user-panel-role, .brand-text {
-                font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', Arial, serif !important;
-                line-height: 1.8 !important;
+            /* Urdu font for text content only — chrome stays LTR */
+            .content-wrapper, .content-wrapper * ,
+            .card-title, .card-text, .modal-body, .modal-title,
+            .form-label, label, td, th, .breadcrumb-item {
+                font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', Arial, serif;
             }
 
-            /* ── Sidebar: move to right ── */
-            .main-sidebar {
-                right: 0 !important;
-                left: auto !important;
-            }
-            /* ── Content wrapper: offset from right ── */
-            .content-wrapper, .main-footer {
-                margin-right: 250px !important;
-                margin-left: 0 !important;
-            }
-            body.sidebar-collapse .content-wrapper,
-            body.sidebar-collapse .main-footer {
-                margin-right: 4.6rem !important;
-                margin-left: 0 !important;
+            /* RTL text direction for content area only (not navbar/sidebar) */
+            .content-wrapper {
+                direction: rtl;
+                text-align: right;
             }
 
-            /* ── Navbar ── */
-            .main-header.navbar {
-                margin-right: 250px !important;
-                margin-left: 0 !important;
+            /* Tables: keep column order LTR (numbers, IDs, dates read better LTR)
+               but text alignment RTL */
+            .content-wrapper table {
+                direction: rtl;
             }
-            body.sidebar-collapse .main-header.navbar {
-                margin-right: 4.6rem !important;
+            .content-wrapper table th,
+            .content-wrapper table td {
+                text-align: right;
             }
-            /* flip left / right nav groups */
-            .navbar-nav.ml-auto {
-                margin-right: auto !important;
-                margin-left: 0 !important;
-            }
-
-            /* ── Sidebar brand: fix OUR horizontal layout margins ── */
-            .sidebar-logo-wrapper {
-                margin-right: 0 !important;
-                margin-left: 12px !important;
-            }
-            .sidebar-brand-text { text-align: right !important; }
-
-            /* ── Nav links: flip icon margin ── */
-            .nav-sidebar .nav-link .nav-icon {
-                margin-right: 0 !important;
-                margin-left: .5rem !important;
-            }
-            /* ── Active indicator: move to right edge ── */
-            .nav-sidebar .nav-item > .nav-link.active::after {
-                left: auto !important;
-                right: 0 !important;
-                border-radius: 3px 0 0 3px !important;
-            }
-            /* ── Submenu indent ── */
-            .nav-sidebar .nav-treeview {
-                padding-right: 1rem !important;
-                padding-left: 0 !important;
-            }
-
-            /* ── Dropdown ── */
-            .dropdown-menu { text-align: right !important; }
-
-            /* ── Tables ── */
-            .table th, .table td { text-align: right !important; }
-
-            /* ── Forms ── */
-            .form-control { text-align: right !important; }
         </style>
     @endif
 
