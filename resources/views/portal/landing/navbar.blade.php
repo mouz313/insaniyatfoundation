@@ -21,7 +21,12 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('portal.verify') }}"><i class="fas fa-id-card me-1"></i> Verify</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('portal.availability') }}"><i class="fas fa-search me-1"></i> Availability</a></li>
             </ul>
-            <a href="{{ $settings['hero_cta_url'] ?? route('portal.registration.create') }}" class="btn btn-nav-donate"><i class="fas fa-tint me-1"></i> Donate</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ $settings['hero_cta_url'] ?? route('portal.registration.create') }}" class="btn btn-nav-donate"><i class="fas fa-tint me-1"></i> Donate</a>
+                @auth
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light" style="border-radius:50px;font-weight:700;font-size:14px;padding:9px 20px;"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                @endauth
+            </div>
         </div>
     </div>
 </nav>

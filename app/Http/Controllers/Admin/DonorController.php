@@ -186,12 +186,8 @@ class DonorController extends Controller
         $eligibilityReasons = $donor->eligibilityReasons();
         $elgStatus = $donor->eligibility_status;
 
-        $donorQr = base64_encode(QrCode::format('svg')->size(150)->generate(json_encode([
-            'id' => $donor->id,
-            'name' => $donor->name,
-            'blood_group' => $donor->blood_group,
-            'cnic' => substr($donor->cnic, 0, 5) . '-***-*',
-        ])));
+        $verifyUrl = route('portal.verify-donor', $donor->registration_no ?? $donor->id);
+        $donorQr = base64_encode(QrCode::format('svg')->size(150)->generate($verifyUrl));
 
         return view('admin.donors.show', compact('donor', 'callLogs', 'annualSummary', 'eligibilityReasons', 'elgStatus', 'donorQr'));
     }
@@ -380,12 +376,157 @@ class DonorController extends Controller
         $ngoLogo = $settings['ngo_logo'] ?? null;
         $logoPath = $ngoLogo ? public_path('storage/' . $ngoLogo) : null;
 
+        $verifyUrl = route('portal.verify-donor', $donor->registration_no ?? $donor->id);
+        $qrCode = base64_encode(QrCode::format('svg')->size(110)->generate($verifyUrl));
+        $tier = $donor->tier;
+
         $pdf = Pdf::loadView('admin.donors.certificate', compact(
-            'donor', 'lastDonation', 'ngoName', 'ngoAddress', 'logoPath'
+            'donor', 'lastDonation', 'ngoName', 'ngoAddress', 'logoPath', 'qrCode', 'tier'
         ));
         $pdf->setPaper('a4', 'portrait');
         $pdf->getDomPDF()->set_option('defaultFont', 'DejaVu Sans');
 
         return $pdf->download("certificate_{$donor->registration_no}.pdf");
+    }
+
+    public function downloadSampleCsv()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="donor_import_sample.csv"',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fputs($file, "\xEF\xBB\xBF");
+            fputcsv($file, ['Name', 'Father Name', 'CNIC', 'Phone', 'Blood Group', 'City', 'Gender', 'DOB', 'Address']);
+            fputcsv($file, ['Muhammad Ali', 'Ahmed Khan', '35202-1234567-1', '03001234567', 'O+', 'Lahore', 'male', '1998-05-15', 'Model Town, Lahore']);
+            fputcsv($file, ['Usman Tariq', 'Tariq Mehmood', '35201-9876543-3', '03219876543', 'B+', 'Rawalpindi', 'male', '1995-10-20', 'Satellite Town']);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getRealPath(), 'r');
+        if (!$handle) {
+            return back()->with('error', 'Could not open CSV file.');
+        }
+
+        $header = fgetcsv($handle);
+        $imported = 0;
+        $skipped = 0;
+
+        $cities = City::pluck('id', 'name')->mapWithKeys(function ($id, $name) {
+            return [strtolower(trim($name)) => $id];
+        });
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (empty(array_filter($row))) continue;
+
+            $name = trim($row[0] ?? '');
+            $fatherName = trim($row[1] ?? '');
+            $cnic = trim($row[2] ?? '');
+            $phone = trim($row[3] ?? '');
+            $bloodGroup = strtoupper(trim($row[4] ?? ''));
+            $cityName = strtolower(trim($row[5] ?? ''));
+            $gender = strtolower(trim($row[6] ?? 'male'));
+            $dob = !empty($row[7]) ? date('Y-m-d', strtotime($row[7])) : null;
+            $address = trim($row[8] ?? '');
+
+            if (empty($name) || empty($phone)) {
+                $skipped++;
+                continue;
+            }
+
+            $exists = Donor::where('phone', $phone)
+                ->when(!empty($cnic), fn($q) => $q->orWhere('cnic', $cnic))
+                ->exists();
+
+            if ($exists) {
+                $skipped++;
+                continue;
+            }
+
+            $cityId = $cities[$cityName] ?? City::first()?->id;
+
+            $donor = Donor::create([
+                'name' => $name,
+                'father_name' => $fatherName ?: null,
+                'cnic' => $cnic ?: null,
+                'phone' => $phone,
+                'blood_group' => in_array($bloodGroup, ['A+','A-','B+','B-','AB+','AB-','O+','O-']) ? $bloodGroup : 'O+',
+                'city_id' => $cityId,
+                'gender' => in_array($gender, ['male', 'female', 'other']) ? $gender : 'male',
+                'dob' => $dob,
+                'address' => $address ?: null,
+                'status' => 'active',
+            ]);
+
+            $cityCode = strtoupper(substr($donor->city->name ?? 'NGO', 0, 3));
+            $initials = strtoupper(($donor->name[0] ?? 'X') . ($donor->father_name[0] ?? 'X'));
+            $phoneLast5 = substr(preg_replace('/\D/', '', $donor->phone), -5);
+            $regNo = sprintf('%s-%s-%05s', $cityCode, $initials, $phoneLast5);
+            $donor->update(['registration_no' => $regNo]);
+
+            $imported++;
+        }
+
+        fclose($handle);
+
+        return back()->with('success', "Import completed: {$imported} donors added successfully, {$skipped} duplicates/invalid rows skipped.");
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $query = Donor::with('city');
+
+        if ($bloodGroup = $request->get('blood_group')) {
+            $query->where('blood_group', $bloodGroup);
+        }
+        if ($cityId = $request->get('city_id')) {
+            $query->where('city_id', $cityId);
+        }
+        if ($status = $request->get('status')) {
+            $query->where('status', $status);
+        }
+
+        $donors = $query->latest()->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="donors_export_' . date('Y-m-d') . '.csv"',
+        ];
+
+        $callback = function () use ($donors) {
+            $file = fopen('php://output', 'w');
+            fputs($file, "\xEF\xBB\xBF");
+            fputcsv($file, ['Reg No', 'Name', 'Father Name', 'Blood Group', 'Phone', 'City', 'Total Donations', 'Status', 'Last Donation Date']);
+
+            foreach ($donors as $d) {
+                fputcsv($file, [
+                    $d->registration_no,
+                    $d->name,
+                    $d->father_name,
+                    $d->blood_group,
+                    $d->phone,
+                    $d->city->name ?? 'N/A',
+                    $d->total_donations ?? 0,
+                    $d->status,
+                    $d->last_donation_date ? $d->last_donation_date->format('Y-m-d') : 'Never',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

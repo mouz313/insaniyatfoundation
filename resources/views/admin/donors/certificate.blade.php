@@ -2,183 +2,219 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Certificate - {{ $donor->name }}</title>
     <style>
-        @page { margin: 0; }
+        @page { margin: 15mm; }
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
+            background: #ffffff;
             margin: 0;
+            padding: 0;
+            color: #333333;
         }
-        .certificate-wrapper {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .certificate {
-            background: #fff;
-            border: 5px solid #dc3545;
-            border-radius: 20px;
-            padding: 50px 40px;
-            text-align: center;
+        .cert-outer {
+            border: 4px double #dc3545;
+            padding: 30px;
+            background: #ffffff;
             position: relative;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
-        .certificate:before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            border: 1px solid #dc3545;
-            border-radius: 14px;
-            pointer-events: none;
+        .cert-inner {
+            border: 1px dashed #b02a37;
+            padding: 35px 25px;
+            text-align: center;
         }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .header-table td {
+            vertical-align: middle;
         }
         .header-logo {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
+            width: 65px;
+            height: 65px;
         }
         .header-text h2 {
             margin: 0;
             color: #dc3545;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
+            letter-spacing: 0.5px;
         }
         .header-text p {
-            margin: 2px 0 0;
+            margin: 4px 0 0;
             color: #6c757d;
-            font-size: 12px;
+            font-size: 11px;
         }
-        .badge-icon {
-            font-size: 70px;
-            color: #dc3545;
-            margin: 15px 0;
-            line-height: 1;
-        }
-        h1 {
-            color: #343a40;
-            font-size: 28px;
-            margin: 10px 0;
+        .cert-title {
+            margin: 25px 0 5px;
+            color: #212529;
+            font-size: 26px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
-        .subtitle {
+        .cert-subtitle {
             color: #6c757d;
-            font-size: 14px;
-            margin-bottom: 25px;
-            border-bottom: 2px dashed #dee2e6;
-            padding-bottom: 20px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            font-style: italic;
         }
         .donor-name {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 700;
             color: #dc3545;
-            margin: 10px 0;
+            margin: 15px 0 10px;
+            text-decoration: underline;
+            text-underline-offset: 6px;
         }
-        .details {
-            margin: 20px 0;
-            font-size: 14px;
-            color: #495057;
-            line-height: 2;
-        }
-        .details strong {
-            color: #343a40;
-        }
-        .date-line {
-            margin-top: 30px;
-            font-size: 14px;
-            color: #6c757d;
-        }
-        .footer {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-            padding-top: 20px;
-            border-top: 1px solid #dee2e6;
-        }
-        .footer .sig {
-            text-align: center;
-            font-size: 12px;
-            color: #6c757d;
-        }
-        .footer .sig strong {
-            color: #343a40;
-            display: block;
-            margin-top: 5px;
-        }
-        .blood-drop {
+        .tier-badge {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            background: #dc3545;
-            border-radius: 50%;
-            margin: 0 4px;
+            padding: 5px 16px;
+            background-color: #f8f9fa;
+            border: 1.5px solid #dc3545;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+        .details-table {
+            width: 80%;
+            margin: 20px auto;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.8;
+            background: #fafafa;
+            border: 1px solid #eeeeee;
+        }
+        .details-table td {
+            padding: 8px 14px;
+        }
+        .quote {
+            font-style: italic;
+            color: #555555;
+            font-size: 12px;
+            margin: 20px auto 15px;
+            line-height: 1.6;
+            width: 85%;
+        }
+        .footer-table {
+            margin-top: 35px;
+            width: 100%;
+        }
+        .footer-table td {
+            vertical-align: bottom;
+            text-align: center;
+        }
+        .qr-box {
+            text-align: center;
+        }
+        .qr-box img {
+            width: 85px;
+            height: 85px;
+        }
+        .qr-caption {
+            font-size: 9px;
+            color: #777777;
+            margin-top: 4px;
+        }
+        .sig-line {
+            border-top: 1px solid #888888;
+            padding-top: 5px;
+            display: inline-block;
+            width: 160px;
+            font-size: 11px;
+            color: #444444;
         }
     </style>
 </head>
 <body>
-    <div class="certificate-wrapper">
-        <div class="certificate">
-            <div class="header">
-                @if($logoPath && file_exists($logoPath))
-                    <img src="{{ $logoPath }}" class="header-logo" alt="Logo">
-                @else
-                    <div style="width:60px;height:60px;background:#dc3545;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:bold;">BD</div>
-                @endif
-                <div class="header-text">
-                    <h2>{{ $ngoName }}</h2>
-                    <p>{{ $ngoAddress }}</p>
-                </div>
-            </div>
+    <div class="cert-outer">
+        <div class="cert-inner">
+            <!-- Header -->
+            <table class="header-table">
+                <tr>
+                    <td style="width: 70px; text-align: left;">
+                        @if($logoPath && file_exists($logoPath))
+                            <img src="{{ $logoPath }}" class="header-logo" alt="Logo">
+                        @else
+                            <div style="width:60px;height:60px;background:#dc3545;border-radius:50%;line-height:60px;color:#fff;font-size:24px;font-weight:bold;text-align:center;">BD</div>
+                        @endif
+                    </td>
+                    <td class="header-text" style="text-align: center;">
+                        <h2>{{ $ngoName }}</h2>
+                        <p>{{ $ngoAddress }}</p>
+                    </td>
+                    <td style="width: 70px; text-align: right;">
+                        <span style="font-size: 32px; color: #dc3545;">🩸</span>
+                    </td>
+                </tr>
+            </table>
 
-            <div class="badge-icon">🩸</div>
-
-            <h1>Certificate of Blood Donation</h1>
-            <div class="subtitle">This is to certify that</div>
+            <div class="cert-title">Certificate of Blood Donation</div>
+            <div class="cert-subtitle">This certificate is proudly awarded to</div>
 
             <div class="donor-name">{{ $donor->name }}</div>
 
-            <div class="details">
-                <strong>Registration No:</strong> {{ $donor->registration_no ?? 'N/A' }}<br>
-                <strong>Blood Group:</strong> {{ $donor->blood_group }}<br>
-                <strong>Donated on:</strong> {{ \Carbon\Carbon::parse($lastDonation->donation_date)->format('F d, Y') }}<br>
-                <strong>Units Donated:</strong> {{ $lastDonation->units }} unit(s)<br>
-                <strong>Location:</strong> {{ $donor->city->name ?? 'N/A' }}
-            </div>
-
-            <p style="font-style:italic;color:#6c757d;font-size:13px;margin-top:15px;">
-                "Your generous donation has saved lives and brought hope to those in need.<br>
-                Thank you for being a hero."
-            </p>
-
-            <div class="date-line">
-                Issued on: {{ now()->format('F d, Y') }}
-            </div>
-
-            <div class="footer">
-                <div class="sig">
-                    ___________________________<br>
-                    <strong>Authorized Signatory</strong><br>
-                    <span style="font-size:11px;">{{ $ngoName }}</span>
+            @if(isset($tier))
+                <div>
+                    <span class="tier-badge">
+                        ★ {{ $tier['name'] }} ({{ $tier['ur'] }}) ★
+                    </span>
                 </div>
-                <div class="sig">
-                    ___________________________<br>
-                    <strong>Donor's Signature</strong>
-                </div>
+            @endif
+
+            <table class="details-table">
+                <tr>
+                    <td style="width: 50%;"><strong>Registration No:</strong> {{ $donor->registration_no ?? 'N/A' }}</td>
+                    <td style="width: 50%;"><strong>Blood Group:</strong> <span style="color:#dc3545;font-weight:bold;">{{ $donor->blood_group }}</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Donation Date:</strong> {{ \Carbon\Carbon::parse($lastDonation->donation_date)->format('d F Y') }}</td>
+                    <td><strong>Units Donated:</strong> {{ $lastDonation->units }} Unit(s)</td>
+                </tr>
+                <tr>
+                    <td><strong>City:</strong> {{ $donor->city->name ?? 'N/A' }}</td>
+                    <td><strong>Total Lifetime Donations:</strong> {{ $donor->total_donations ?? 1 }}</td>
+                </tr>
+            </table>
+
+            <div class="quote">
+                "Whoever saves a life, it is as though he had saved the life of all mankind."<br>
+                Thank you for your selfless contribution in saving precious lives.
             </div>
+
+            <div style="font-size: 11px; color: #888888; margin-top: 10px;">
+                Issued on: {{ now()->format('d F Y') }}
+            </div>
+
+            <!-- Footer signatures & QR -->
+            <table class="footer-table">
+                <tr>
+                    <td style="width: 35%;">
+                        <div class="sig-line">
+                            <strong>Authorized Signatory</strong><br>
+                            <span>{{ $ngoName }}</span>
+                        </div>
+                    </td>
+                    <td style="width: 30%;">
+                        @if(isset($qrCode))
+                            <div class="qr-box">
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="Verification QR">
+                                <div class="qr-caption">Scan to Verify Authenticity</div>
+                            </div>
+                        @endif
+                    </td>
+                    <td style="width: 35%;">
+                        <div class="sig-line">
+                            <strong>Donor's Signature</strong><br>
+                            <span>{{ $donor->name }}</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
         </div>
     </div>
 </body>

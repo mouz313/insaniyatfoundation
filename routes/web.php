@@ -28,12 +28,16 @@ use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Portal\LandingPageController as PortalLandingController;
 use App\Http\Controllers\Portal\VerificationController;
 use App\Http\Controllers\Portal\BloodAvailabilityController;
+use App\Http\Controllers\Portal\PublicBloodRequestController;
 
 Route::get('/', [PortalLandingController::class, 'index'])->name('portal.landing');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('donors/sample-csv', [DonorController::class, 'downloadSampleCsv'])->name('donors.sample-csv');
+    Route::post('donors/import-csv', [DonorController::class, 'importCsv'])->name('donors.import-csv');
+    Route::get('donors/export-csv', [DonorController::class, 'exportCsv'])->name('donors.export-csv');
     Route::get('donors/check-duplicate', [DonorController::class, 'checkDuplicate'])->name('donors.check-duplicate');
     Route::get('donors/search-referrer', [DonorController::class, 'searchReferrer'])->name('donors.search-referrer');
     Route::get('donors/{donor}/certificate', [DonorController::class, 'certificate'])->name('donors.certificate');
@@ -107,11 +111,28 @@ Route::prefix('portal')->name('portal.')->group(function () {
     Route::post('register', [RegistrationController::class, 'store'])->name('registration.store');
     Route::get('register/{donor}/confirm', [RegistrationController::class, 'confirm'])->name('registration.confirm');
     Route::get('verify', [VerificationController::class, 'show'])->name('verify')->middleware('throttle:10,1');
+    Route::get('verify-donor/{identifier}', [VerificationController::class, 'verifyDonor'])->name('verify-donor');
     Route::get('availability', [BloodAvailabilityController::class, 'index'])->name('availability');
+
+    Route::get('request-blood', [PublicBloodRequestController::class, 'create'])->name('blood-request.create');
+    Route::post('request-blood', [PublicBloodRequestController::class, 'store'])->name('blood-request.store')->middleware('throttle:10,1');
+    Route::get('request-blood/{bloodRequest}/confirmed', [PublicBloodRequestController::class, 'confirmation'])->name('blood-request.confirmed');
 
     Route::get('donors/search-referrer', [RegistrationController::class, 'searchReferrer'])->name('donors.search-referrer')->middleware('throttle:30,1');
     Route::get('referrer/{cnic}', [VerificationController::class, 'referrer'])->name('referrer')->middleware('throttle:10,1');
     Route::get('areas/by-city/{cityId}', [\App\Http\Controllers\Admin\AreaController::class, 'getByCity'])->name('areas.by-city');
+
+    Route::get('presentation/pdf', function () {
+        \Illuminate\Support\Facades\Artisan::call('portal:generate-presentation');
+        $path = public_path('downloads/Portal_Executive_Presentation.pdf');
+        return response()->download($path, 'Blood_Bank_Portal_Executive_Presentation.pdf');
+    })->name('presentation.pdf');
+
+    Route::get('presentation/excel', function () {
+        \Illuminate\Support\Facades\Artisan::call('portal:generate-presentation');
+        $path = public_path('downloads/Portal_Features_Catalog.xlsx');
+        return response()->download($path, 'Blood_Bank_Portal_Features_Catalog.xlsx');
+    })->name('presentation.excel');
 });
 
 Route::get('locale/{locale}', function ($locale) {

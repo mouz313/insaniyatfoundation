@@ -18,7 +18,7 @@
                     @endphp
                     {{ $greet }}, {{ auth()->user()->name ?? 'Admin' }}
                 </h1>
-                <small class="text-muted"><i class="far fa-calendar-alt mr-1"></i>{{ now()->format('l, F j, Y') }}</small>
+                <small class="text-muted"><i class="far fa-calendar-alt mr-1"></i>{{ now()->translatedFormat('l, F j, Y') }}</small>
             </div>
         </div>
         <div class="mt-2 mt-sm-0">
@@ -41,7 +41,7 @@
                     </div>
                     <div class="db-card-footer">
                         <span class="db-card-stat"><i class="fas fa-circle mr-1" style="color:#2ecc71;font-size:8px;"></i>{{ $activeDonors ?? 0 }} {{ __('app.active') }}</span>
-                        <a href="{{ route('admin.donors.index') }}" class="db-card-link">View <i class="fas fa-arrow-right ml-1" style="font-size:10px;"></i></a>
+                        <a href="{{ route('admin.donors.index') }}" class="db-card-link">{{ __('app.view') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}" style="font-size:10px;"></i></a>
                     </div>
                 </div>
             </div>
@@ -56,7 +56,7 @@
                     </div>
                     <div class="db-card-footer">
                         <span class="db-card-stat"><i class="fas fa-circle mr-1" style="color:#2ecc71;font-size:8px;"></i>{{ $donorFoundCalls ?? 0 }} {{ __('app.found') }}</span>
-                        <a href="{{ route('admin.call-logs.index') }}" class="db-card-link">View <i class="fas fa-arrow-right ml-1" style="font-size:10px;"></i></a>
+                        <a href="{{ route('admin.call-logs.index') }}" class="db-card-link">{{ __('app.view') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}" style="font-size:10px;"></i></a>
                     </div>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                     </div>
                     <div class="db-card-footer">
                         <span class="db-card-stat"><i class="fas fa-circle mr-1" style="color:#f39c12;font-size:8px;"></i>PKR {{ number_format($totalMoney ?? 0) }} {{ __('app.total') }}</span>
-                        <a href="{{ route('admin.money-donations.index') }}" class="db-card-link">View <i class="fas fa-arrow-right ml-1" style="font-size:10px;"></i></a>
+                        <a href="{{ route('admin.money-donations.index') }}" class="db-card-link">{{ __('app.view') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}" style="font-size:10px;"></i></a>
                     </div>
                 </div>
             </div>
@@ -85,8 +85,8 @@
                         <div class="db-card-label">{{ __('app.upcoming_campaigns') }}</div>
                     </div>
                     <div class="db-card-footer">
-                        <span class="db-card-stat"><i class="fas fa-circle mr-1" style="color:#e74c3c;font-size:8px;"></i>{{ collect($recentCampaigns)->where('date', '>=', \Carbon\Carbon::now()->format('Y-m-d'))->count() }} Planned</span>
-                        <a href="{{ route('admin.campaigns.index') }}" class="db-card-link">View <i class="fas fa-arrow-right ml-1" style="font-size:10px;"></i></a>
+                        <span class="db-card-stat"><i class="fas fa-circle mr-1" style="color:#e74c3c;font-size:8px;"></i>{{ collect($recentCampaigns)->where('date', '>=', \Carbon\Carbon::now()->format('Y-m-d'))->count() }} {{ __('app.planned') }}</span>
+                        <a href="{{ route('admin.campaigns.index') }}" class="db-card-link">{{ __('app.view') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}" style="font-size:10px;"></i></a>
                     </div>
                 </div>
             </div>
@@ -101,7 +101,7 @@
                     <div>
                         <div class="db-mini-label">{{ __('app.active_donors') }}</div>
                         <div class="db-mini-value text-success">{{ $activeDonors ?? 0 }}</div>
-                        <small class="text-muted">{{ $activeDonors > 0 ? round(($activeDonors / max($totalDonors, 1)) * 100) : 0 }}% of total</small>
+                        <small class="text-muted">{{ $activeDonors > 0 ? round(($activeDonors / max($totalDonors, 1)) * 100) : 0 }}% {{ __('app.of_total') }}</small>
                     </div>
                     <div class="db-mini-icon" style="background:rgba(40,167,69,0.12);color:#28a745;"><i class="fas fa-user-check"></i></div>
                 </div>
@@ -116,7 +116,7 @@
                     <div>
                         <div class="db-mini-label">{{ __('app.inactive_donors') }}</div>
                         <div class="db-mini-value text-secondary">{{ $inactiveDonors ?? 0 }}</div>
-                        <small class="text-muted">{{ $inactiveDonors > 0 ? round(($inactiveDonors / max($totalDonors, 1)) * 100) : 0 }}% of total</small>
+                        <small class="text-muted">{{ $inactiveDonors > 0 ? round(($inactiveDonors / max($totalDonors, 1)) * 100) : 0 }}% {{ __('app.of_total') }}</small>
                     </div>
                     <div class="db-mini-icon" style="background:rgba(108,117,125,0.12);color:#6c757d;"><i class="fas fa-user-clock"></i></div>
                 </div>
@@ -156,8 +156,8 @@
         <div class="col-md-7 mb-3">
             <div class="db-card-flat">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-chart-pie text-danger mr-2"></i> Blood Group Distribution</div>
-                    <small class="text-muted">Donor breakdown by blood type</small>
+                    <div><i class="fas fa-chart-pie text-danger mr-2"></i> {{ __('app.blood_group_distribution') }}</div>
+                    <small class="text-muted">{{ __('app.donor_breakdown_by_blood_type') }}</small>
                 </div>
                 <div class="db-card-flat-body">
                     <div class="row align-items-center">
@@ -192,8 +192,8 @@
         <div class="col-md-5 mb-3">
             <div class="db-card-flat h-100">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-warehouse text-info mr-2"></i> Blood Inventory Overview</div>
-                    <a href="{{ route('admin.blood-inventory.index') }}" class="btn btn-xs btn-outline-info">Manage <i class="fas fa-arrow-right ml-1"></i></a>
+                    <div><i class="fas fa-warehouse text-info mr-2"></i> {{ __('app.blood_inventory_overview') }}</div>
+                    <a href="{{ route('admin.blood-inventory.index') }}" class="btn btn-xs btn-outline-info">{{ __('app.manage') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}"></i></a>
                 </div>
                 <div class="db-card-flat-body">
                     <div class="text-center mb-3">
@@ -227,7 +227,7 @@
                     @if(count($lowStockAlerts) > 0)
                         <div class="db-low-stock-warning mt-3">
                             <i class="fas fa-exclamation-triangle mr-1"></i>
-                            <strong>{{ count($lowStockAlerts) }} group(s)</strong> below threshold
+                            <strong>{{ count($lowStockAlerts) }} {{ __('app.group_below_threshold') }}</strong>
                             <span class="float-right">
                                 @foreach($lowStockAlerts as $alert)
                                     <span class="badge badge-danger ml-1">{{ $alert['blood_group'] }}:{{ $alert['total_units'] }}</span>
@@ -236,7 +236,7 @@
                         </div>
                     @else
                         <div class="db-low-stock-ok mt-3">
-                            <i class="fas fa-check-circle mr-1"></i> All blood groups have sufficient stock
+                            <i class="fas fa-check-circle mr-1"></i> {{ __('app.all_sufficient_stock') }}
                         </div>
                     @endif
                 </div>
@@ -249,7 +249,7 @@
         <div class="col-md-4 mb-3">
             <div class="db-card-flat">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-chart-line text-danger mr-2"></i> Donation Trends (12 Mo)</div>
+                    <div><i class="fas fa-chart-line text-danger mr-2"></i> {{ __('app.donation_trends') }} (12 {{ __('app.months_abbr') }})</div>
                 </div>
                 <div class="db-card-flat-body">
                     <canvas id="donationTrendChart" style="height:200px;width:100%;"></canvas>
@@ -259,7 +259,7 @@
         <div class="col-md-4 mb-3">
             <div class="db-card-flat">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-chart-line text-warning mr-2"></i> Money Trends (12 Mo)</div>
+                    <div><i class="fas fa-chart-line text-warning mr-2"></i> {{ __('app.money_trends') }} (12 {{ __('app.months_abbr') }})</div>
                 </div>
                 <div class="db-card-flat-body">
                     <canvas id="moneyTrendChart" style="height:200px;width:100%;"></canvas>
@@ -269,7 +269,7 @@
         <div class="col-md-4 mb-3">
             <div class="db-card-flat">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-chart-area text-success mr-2"></i> Donor Growth (12 Mo)</div>
+                    <div><i class="fas fa-chart-area text-success mr-2"></i> {{ __('app.donor_growth') }} (12 {{ __('app.months_abbr') }})</div>
                 </div>
                 <div class="db-card-flat-body">
                     <canvas id="donorGrowthChart" style="height:200px;width:100%;"></canvas>
@@ -283,8 +283,8 @@
         <div class="col-md-7 mb-3">
             <div class="db-card-flat">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-tint text-success mr-2"></i> Recent Donations</div>
-                    <a href="{{ route('admin.blood-donations.index') }}" class="btn btn-xs btn-outline-success">View All <i class="fas fa-arrow-right ml-1"></i></a>
+                    <div><i class="fas fa-tint text-success mr-2"></i> {{ __('app.recent_donations') }}</div>
+                    <a href="{{ route('admin.blood-donations.index') }}" class="btn btn-xs btn-outline-success">{{ __('app.view_all') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}"></i></a>
                 </div>
                 <div class="db-card-flat-body p-0">
                     @if(isset($recentDonations) && count($recentDonations) > 0)
@@ -311,7 +311,7 @@
                                                 </div>
                                             </td>
                                             <td><span class="db-blood-badge">{{ $donation['blood_group'] }}</span></td>
-                                            <td><span class="text-muted" style="font-size:13px;">{{ \Carbon\Carbon::parse($donation['donation_date'])->format('d M') }}</span></td>
+                                            <td><span class="text-muted" style="font-size:13px;">{{ \Carbon\Carbon::parse($donation['donation_date'])->translatedFormat('d M') }}</span></td>
                                             <td><strong>{{ $donation['units'] }}</strong></td>
                                             <td>
                                                 @switch($donation['status'])
@@ -327,7 +327,7 @@
                             </table>
                         </div>
                     @else
-                        <div class="text-center py-4 text-muted"><i class="fas fa-inbox mr-2"></i>No recent donations.</div>
+                        <div class="text-center py-4 text-muted"><i class="fas fa-inbox mr-2"></i>{{ __('app.no_recent_donations') }}</div>
                     @endif
                 </div>
             </div>
@@ -335,37 +335,38 @@
         <div class="col-md-5 mb-3">
             <div class="db-card-flat h-100">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-chart-line text-warning mr-2"></i> Money Overview</div>
-                    <a href="{{ route('admin.money-donations.index') }}" class="btn btn-xs btn-outline-warning">View All <i class="fas fa-arrow-right ml-1"></i></a>
+                    <div><i class="fas fa-chart-line text-warning mr-2"></i> {{ __('app.money_overview') }}</div>
+                    <a href="{{ route('admin.money-donations.index') }}" class="btn btn-xs btn-outline-warning">{{ __('app.view_all') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}"></i></a>
                 </div>
                 <div class="db-card-flat-body">
                     <div class="row text-center mb-3">
                         <div class="col-4 db-money-box">
                             <div class="db-money-amount text-warning">PKR {{ number_format($moneyThisMonth ?? 0) }}</div>
-                            <div class="db-money-label">This Month</div>
+                            <div class="db-money-label">{{ __('app.this_month') }}</div>
                         </div>
                         <div class="col-4 db-money-box">
                             <div class="db-money-amount text-success">PKR {{ number_format($moneyThisYear ?? 0) }}</div>
-                            <div class="db-money-label">This Year</div>
+                            <div class="db-money-label">{{ __('app.this_year') }}</div>
                         </div>
                         <div class="col-4 db-money-box">
                             <div class="db-money-amount text-info">PKR {{ number_format($totalMoney ?? 0) }}</div>
-                            <div class="db-money-label">All Time</div>
+                            <div class="db-money-label">{{ __('app.all_time') }}</div>
                         </div>
                     </div>
                     @if(isset($moneyByMethod) && count($moneyByMethod) > 0)
                         <hr class="my-2">
-                        <div style="font-size:13px;font-weight:600;color:#495057;margin-bottom:8px;"><i class="fas fa-credit-card mr-1"></i> By Payment Method</div>
+                        <div style="font-size:13px;font-weight:600;color:#495057;margin-bottom:8px;"><i class="fas fa-credit-card mr-1"></i> {{ __('app.by_payment_method') }}</div>
                         @foreach($moneyByMethod as $method => $amount)
                             @php
                                 $methodTotal = max(array_sum($moneyByMethod), 1);
                                 $methodPct = round(($amount / $methodTotal) * 100);
                                 $methodColors = ['cash' => '#28a745', 'bank_transfer' => '#17a2b8', 'credit_card' => '#6610f2', 'online' => '#fd7e14', 'cheque' => '#e83e8c', 'other' => '#6c757d'];
                                 $barColor = $methodColors[$method] ?? '#6c757d';
+                                $methodLabel = __('app.' . $method) !== 'app.' . $method ? __('app.' . $method) : ucfirst(str_replace('_', ' ', $method));
                             @endphp
                             <div class="mb-2">
                                 <div class="d-flex justify-content-between" style="font-size:13px;">
-                                    <span>{{ ucfirst(str_replace('_', ' ', $method)) }}</span>
+                                    <span>{{ $methodLabel }}</span>
                                     <span><strong>PKR {{ number_format($amount) }}</strong> ({{ $methodPct }}%)</span>
                                 </div>
                                 <div class="progress" style="height:6px;">
@@ -384,8 +385,8 @@
         <div class="col-md-6 mb-3">
             <div class="db-card-flat">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-phone-volume text-info mr-2"></i> Today's Call Status</div>
-                    <a href="{{ route('admin.blood-requests.index') }}" class="btn btn-xs btn-outline-info">Manage <i class="fas fa-arrow-right ml-1"></i></a>
+                    <div><i class="fas fa-phone-volume text-info mr-2"></i> {{ __('app.todays_call_status') }}</div>
+                    <a href="{{ route('admin.blood-requests.index') }}" class="btn btn-xs btn-outline-info">{{ __('app.manage') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}"></i></a>
                 </div>
                 <div class="db-card-flat-body">
                     <div class="row text-center mb-3">
@@ -422,10 +423,10 @@
                         <div class="progress-bar bg-warning" style="width: {{ ($donorFoundCalls / $totalCalls) * 100 }}%" title="Donor Found: {{ $donorFoundCalls }}"></div>
                     </div>
                     <div class="d-flex justify-content-between mt-2" style="font-size:12px;">
-                        <span><i class="fas fa-circle text-info mr-1" style="font-size:8px;"></i>Pending</span>
-                        <span><i class="fas fa-circle text-success mr-1" style="font-size:8px;"></i>Resolved</span>
-                        <span><i class="fas fa-circle text-danger mr-1" style="font-size:8px;"></i>Closed</span>
-                        <span><i class="fas fa-circle text-warning mr-1" style="font-size:8px;"></i>Donor Found</span>
+                        <span><i class="fas fa-circle text-info mr-1" style="font-size:8px;"></i>{{ __('app.pending') }}</span>
+                        <span><i class="fas fa-circle text-success mr-1" style="font-size:8px;"></i>{{ __('app.resolved') }}</span>
+                        <span><i class="fas fa-circle text-danger mr-1" style="font-size:8px;"></i>{{ __('app.closed') }}</span>
+                        <span><i class="fas fa-circle text-warning mr-1" style="font-size:8px;"></i>{{ __('app.donor_found') }}</span>
                     </div>
                 </div>
             </div>
@@ -433,8 +434,8 @@
         <div class="col-md-6 mb-3">
             <div class="db-card-flat h-100">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-calendar-alt text-danger mr-2"></i> Upcoming Campaigns</div>
-                    <a href="{{ route('admin.campaigns.create') }}" class="btn btn-xs btn-outline-danger"><i class="fas fa-plus mr-1"></i>Create</a>
+                    <div><i class="fas fa-calendar-alt text-danger mr-2"></i> {{ __('app.upcoming_campaigns') }}</div>
+                    <a href="{{ route('admin.campaigns.create') }}" class="btn btn-xs btn-outline-danger"><i class="fas fa-plus mr-1"></i>{{ __('app.create') }}</a>
                 </div>
                 <div class="db-card-flat-body p-0">
                     @if(isset($upcomingCampaigns) && count($upcomingCampaigns) > 0)
@@ -444,21 +445,21 @@
                                     <div class="d-flex align-items-center">
                                         <div class="db-campaign-date-box">
                                             <div class="db-campaign-day">{{ \Carbon\Carbon::parse($campaign['date'])->format('d') }}</div>
-                                            <div class="db-campaign-month">{{ \Carbon\Carbon::parse($campaign['date'])->format('M') }}</div>
+                                            <div class="db-campaign-month">{{ \Carbon\Carbon::parse($campaign['date'])->translatedFormat('M') }}</div>
                                         </div>
                                         <div class="ml-3 flex-grow-1">
                                             <div class="font-weight-bold" style="font-size:14px;">{{ $campaign['name'] }}</div>
                                             <small class="text-muted"><i class="fas fa-map-marker-alt mr-1"></i>{{ $campaign['venue'] }}</small>
                                         </div>
                                         <div class="text-right">
-                                            <span class="badge badge-danger">{{ $campaign['target_units'] ?? '—' }} units</span>
+                                            <span class="badge badge-danger">{{ $campaign['target_units'] ?? '—' }} {{ __('app.units') }}</span>
                                         </div>
                                     </div>
                                 </a>
                             @endforeach
                         </div>
                     @else
-                        <div class="text-center py-4 text-muted"><i class="fas fa-calendar-times mr-2"></i>No upcoming campaigns.</div>
+                        <div class="text-center py-4 text-muted"><i class="fas fa-calendar-times mr-2"></i>{{ __('app.no_upcoming_campaigns') }}</div>
                     @endif
                 </div>
             </div>
@@ -470,8 +471,8 @@
         <div class="col-12 mb-3">
             <div class="db-card-flat">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-tasks text-info mr-2"></i> Blood Request Status</div>
-                    <a href="{{ route('admin.blood-requests.index') }}" class="btn btn-xs btn-outline-info">View All <i class="fas fa-arrow-right ml-1"></i></a>
+                    <div><i class="fas fa-tasks text-info mr-2"></i> {{ __('app.blood_request_status') }}</div>
+                    <a href="{{ route('admin.blood-requests.index') }}" class="btn btn-xs btn-outline-info">{{ __('app.view_all') }} <i class="fas {{ app()->getLocale() === 'ur' ? 'fa-arrow-left mr-1' : 'fa-arrow-right ml-1' }}"></i></a>
                 </div>
                 <div class="db-card-flat-body">
                     @php $reqTotal = max($pendingRequests + $resolvedRequests + $closedRequests, 1); @endphp
@@ -479,25 +480,25 @@
                         <div class="col-3">
                             <div class="db-req-stat">
                                 <div class="db-req-num">{{ $totalBloodRequests ?? 0 }}</div>
-                                <div class="db-req-lbl">Total Requests</div>
+                                <div class="db-req-lbl">{{ __('app.total_requests') }}</div>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="db-req-stat">
                                 <div class="db-req-num text-info">{{ $pendingRequests ?? 0 }}</div>
-                                <div class="db-req-lbl">Pending</div>
+                                <div class="db-req-lbl">{{ __('app.pending') }}</div>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="db-req-stat">
                                 <div class="db-req-num text-success">{{ $resolvedRequests ?? 0 }}</div>
-                                <div class="db-req-lbl">Resolved</div>
+                                <div class="db-req-lbl">{{ __('app.resolved') }}</div>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="db-req-stat">
                                 <div class="db-req-num text-danger">{{ $closedRequests ?? 0 }}</div>
-                                <div class="db-req-lbl">Closed</div>
+                                <div class="db-req-lbl">{{ __('app.closed') }}</div>
                             </div>
                         </div>
                     </div>
@@ -513,9 +514,9 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-center mt-2" style="font-size:13px;gap:20px;">
-                        <span><i class="fas fa-circle text-info mr-1" style="font-size:8px;"></i>{{ round(($pendingRequests / $reqTotal) * 100) }}% Pending</span>
-                        <span><i class="fas fa-circle text-success mr-1" style="font-size:8px;"></i>{{ round(($resolvedRequests / $reqTotal) * 100) }}% Resolved</span>
-                        <span><i class="fas fa-circle text-danger mr-1" style="font-size:8px;"></i>{{ round(($closedRequests / $reqTotal) * 100) }}% Closed</span>
+                        <span><i class="fas fa-circle text-info mr-1" style="font-size:8px;"></i>{{ round(($pendingRequests / $reqTotal) * 100) }}% {{ __('app.pending') }}</span>
+                        <span><i class="fas fa-circle text-success mr-1" style="font-size:8px;"></i>{{ round(($resolvedRequests / $reqTotal) * 100) }}% {{ __('app.resolved') }}</span>
+                        <span><i class="fas fa-circle text-danger mr-1" style="font-size:8px;"></i>{{ round(($closedRequests / $reqTotal) * 100) }}% {{ __('app.closed') }}</span>
                     </div>
                 </div>
             </div>
@@ -527,7 +528,7 @@
         <div class="col-12 mb-3">
             <div class="db-card-flat">
                 <div class="db-card-flat-header">
-                    <div><i class="fas fa-bolt text-warning mr-2"></i> Quick Actions</div>
+                    <div><i class="fas fa-bolt text-warning mr-2"></i> {{ __('app.quick_actions') }}</div>
                 </div>
                 <div class="db-card-flat-body">
                     <div class="row">

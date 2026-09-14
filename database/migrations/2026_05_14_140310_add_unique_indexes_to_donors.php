@@ -9,16 +9,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('donors', function (Blueprint $table) {
-            $table->unique('cnic');
-            $table->unique('registration_no');
+            if (!Schema::hasIndex('donors', 'donors_cnic_unique')) {
+                $table->unique('cnic');
+            }
+            if (!Schema::hasIndex('donors', 'donors_registration_no_unique')) {
+                $table->unique('registration_no');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('donors', function (Blueprint $table) {
-            $table->dropUnique(['cnic']);
-            $table->dropUnique(['registration_no']);
+            if (Schema::hasIndex('donors', 'donors_cnic_unique')) {
+                $table->dropUnique(['cnic']);
+            }
+            if (Schema::hasIndex('donors', 'donors_registration_no_unique')) {
+                $table->dropUnique(['registration_no']);
+            }
         });
     }
 };

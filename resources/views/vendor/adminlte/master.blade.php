@@ -19,6 +19,23 @@
         @yield('title_postfix', config('adminlte.title_postfix', ''))
     </title>
 
+    {{-- Instant Dark Mode Initializer --}}
+    <script>
+        (function() {
+            var theme = localStorage.getItem('admin_theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+                var obs = new MutationObserver(function() {
+                    if (document.body) {
+                        document.body.classList.add('dark-mode');
+                        obs.disconnect();
+                    }
+                });
+                obs.observe(document.documentElement, { childList: true });
+            }
+        })();
+    </script>
+
     {{-- IFrame Preloader Removal Workaround --}}
     <style type="text/css">
         body.iframe-mode .preloader {
@@ -77,17 +94,86 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap">
         <style>
-            /* Urdu font for text content only — chrome stays LTR */
-            .content-wrapper, .content-wrapper * ,
+            /* Urdu font for text content — chrome stays LTR */
+            .content-wrapper,
+            .content-wrapper h1, .content-wrapper h2, .content-wrapper h3,
+            .content-wrapper h4, .content-wrapper h5, .content-wrapper h6,
+            .content-wrapper p, .content-wrapper span:not([class*="fa"]),
+            .content-wrapper a:not([class*="fa"]),
             .card-title, .card-text, .modal-body, .modal-title,
-            .form-label, label, td, th, .breadcrumb-item {
+            .form-label, label, td, th, .breadcrumb-item,
+            .form-control, .btn, .alert, .badge,
+            .db-card-label, .db-card-stat, .db-mini-label {
                 font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', Arial, serif;
             }
 
-            /* RTL text direction for content area only (not navbar/sidebar) */
+            /* STRICTLY protect FontAwesome icons everywhere from font override */
+            i, i::before, i::after,
+            .fa, .fas, .far, .fal, .fad, .fab, [class*="fa-"], [class^="fa-"],
+            [class*="fa-"]::before, [class^="fa-"]::before,
+            .content-wrapper i, .content-wrapper .fa, .content-wrapper .fas, .content-wrapper .far,
+            .content-wrapper [class*="fa-"], .btn [class*="fa-"],
+            .db-card-icon i, .db-mini-icon i, i.fas, i.far, i.fab {
+                font-family: "Font Awesome 5 Free" !important;
+                font-style: normal !important;
+                font-weight: 900 !important;
+            }
+            .far, .content-wrapper .far, i.far, .far::before {
+                font-weight: 400 !important;
+            }
+            .fab, .content-wrapper .fab, i.fab, .fa-brands, .fab::before, .fa-brands::before {
+                font-family: "Font Awesome 5 Brands" !important;
+                font-weight: 400 !important;
+            }
+
+            /* RTL text direction for content area */
             .content-wrapper {
                 direction: rtl;
                 text-align: right;
+            }
+
+            /* RTL layout adjustments for stat cards and elements */
+            .content-wrapper .db-card-icon {
+                left: 18px !important;
+                right: auto !important;
+            }
+            .content-wrapper .db-inv-icon {
+                left: 6px !important;
+                right: auto !important;
+            }
+            .content-wrapper .db-mini-card {
+                border-right-width: 4px !important;
+                border-right-style: solid !important;
+                border-left: none !important;
+            }
+            .content-wrapper .db-avatar {
+                margin-left: 10px !important;
+                margin-right: 0 !important;
+            }
+            .content-wrapper .db-blood-count {
+                margin-right: auto !important;
+                margin-left: 0 !important;
+            }
+            .content-wrapper .db-blood-pct {
+                text-align: left !important;
+            }
+            .content-wrapper .float-right {
+                float: left !important;
+            }
+            .content-wrapper .float-left {
+                float: right !important;
+            }
+            .content-wrapper .mr-1 { margin-left: 0.25rem !important; margin-right: 0 !important; }
+            .content-wrapper .mr-2 { margin-left: 0.5rem !important; margin-right: 0 !important; }
+            .content-wrapper .mr-3 { margin-left: 1rem !important; margin-right: 0 !important; }
+            .content-wrapper .ml-1 { margin-right: 0.25rem !important; margin-left: 0 !important; }
+            .content-wrapper .ml-2 { margin-right: 0.5rem !important; margin-left: 0 !important; }
+            .content-wrapper .ml-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+
+            /* Form labels & inputs in RTL */
+            .content-wrapper .form-group label {
+                text-align: right;
+                display: block;
             }
 
             /* Tables: keep column order LTR (numbers, IDs, dates read better LTR)
@@ -104,8 +190,36 @@
 
     {{-- Custom Stylesheets (post AdminLTE) --}}
     @yield('adminlte_css')
+    @stack('css')
 
     <style>
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+        }
+        @media (min-width: 992px) {
+            body:not(.sidebar-collapse) .content-wrapper {
+                margin-left: 250px !important;
+            }
+            body.sidebar-collapse .content-wrapper {
+                margin-left: 4.6rem !important;
+            }
+        }
+        @media (max-width: 991.98px) {
+            .content-wrapper {
+                margin-left: 0 !important;
+            }
+        }
+        .content-wrapper {
+            transition: margin-left 0.3s ease-in-out !important;
+        }
+        .os-scrollbar-horizontal {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            pointer-events: none !important;
+        }
         .main-sidebar .sidebar-label {
             padding: 16px 16px 4px;
             font-size: 11px;
@@ -121,6 +235,109 @@
         }
         .nav-item-dashboard .nav-link.active {
             border-color: transparent;
+        }
+
+        /* ══════════════════════════════════════════════════
+           DARK MODE STYLES & OVERRIDES
+           ══════════════════════════════════════════════════ */
+        body.dark-mode,
+        .dark-mode .wrapper,
+        .dark-mode .content-wrapper {
+            background-color: #17191c !important;
+            color: #e2e8f0 !important;
+        }
+
+        .dark-mode .main-header.navbar {
+            background-color: #1f2328 !important;
+            border-bottom: 1px solid #2d333b !important;
+            color: #f1f5f9 !important;
+        }
+        .dark-mode .main-header.navbar .nav-link {
+            color: #94a3b8 !important;
+        }
+        .dark-mode .main-header.navbar .nav-link:hover {
+            color: #ffffff !important;
+        }
+
+        .dark-mode .card,
+        .dark-mode .db-mini-card,
+        .dark-mode .db-card-flat,
+        .dark-mode .modal-content {
+            background-color: #21262d !important;
+            border-color: #30363d !important;
+            color: #e2e8f0 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .dark-mode .db-card-flat-header,
+        .dark-mode .card-header {
+            background-color: #262c36 !important;
+            border-bottom-color: #30363d !important;
+            color: #f8fafc !important;
+        }
+        .dark-mode .card-header.bg-white {
+            background-color: #262c36 !important;
+        }
+
+        .dark-mode .table {
+            color: #e2e8f0 !important;
+        }
+        .dark-mode .table td,
+        .dark-mode .table th {
+            border-color: #30363d !important;
+        }
+        .dark-mode .table-hover tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .thead-light th {
+            background-color: #262c36 !important;
+            color: #cbd5e1 !important;
+            border-color: #30363d !important;
+        }
+
+        .dark-mode .text-dark,
+        .dark-mode .db-mini-value,
+        .dark-mode .db-blood-count,
+        .dark-mode .db-inventory-total {
+            color: #f8fafc !important;
+        }
+        .dark-mode .text-muted,
+        .dark-mode .db-mini-label,
+        .dark-mode .db-blood-pct {
+            color: #8b949e !important;
+        }
+
+        .dark-mode .form-control {
+            background-color: #1b1f24 !important;
+            border-color: #373e47 !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .form-control:focus {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+        }
+        .dark-mode .custom-file-label {
+            background-color: #1b1f24 !important;
+            border-color: #373e47 !important;
+            color: #8b949e !important;
+        }
+        .dark-mode .custom-file-label::after {
+            background-color: #30363d !important;
+            color: #e2e8f0 !important;
+        }
+
+        .dark-mode .bg-light,
+        .dark-mode .modal-footer.bg-light {
+            background-color: #161b22 !important;
+            border-color: #30363d !important;
+        }
+
+        .dark-mode #liveClock #clockTime {
+            color: #f8fafc !important;
+        }
+        .dark-mode #liveClock #clockDate {
+            color: #8b949e !important;
         }
     </style>
 
@@ -196,6 +413,39 @@
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
 
+    {{-- Dark Mode Toggle Handler & Synchronization --}}
+    <script>
+        (function() {
+            function syncTheme() {
+                var isDark = localStorage.getItem('admin_theme') === 'dark';
+                if (isDark) {
+                    $('body').addClass('dark-mode');
+                    $('html').addClass('dark-mode');
+                } else {
+                    $('body').removeClass('dark-mode');
+                    $('html').removeClass('dark-mode');
+                }
+            }
+
+            $(document).ready(function() {
+                syncTheme();
+
+                $(document).on('click', '#themeToggleBtn', function(e) {
+                    e.preventDefault();
+                    var currentlyDark = $('body').hasClass('dark-mode');
+                    if (currentlyDark) {
+                        $('body').removeClass('dark-mode');
+                        $('html').removeClass('dark-mode');
+                        localStorage.setItem('admin_theme', 'light');
+                    } else {
+                        $('body').addClass('dark-mode');
+                        $('html').addClass('dark-mode');
+                        localStorage.setItem('admin_theme', 'dark');
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>

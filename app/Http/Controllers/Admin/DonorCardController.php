@@ -52,14 +52,8 @@ class DonorCardController extends Controller
 
         $qrCodes = [];
         foreach ($donors as $donor) {
-            $payload = json_encode([
-                'id' => $donor->id,
-                'name' => $donor->name,
-                'blood_group' => $donor->blood_group,
-                'reg_no' => $donor->registration_no,
-                'verify_url' => route('portal.verify') . '?query=' . urlencode($donor->cnic),
-            ]);
-            $qrCodes[$donor->id] = base64_encode(QrCode::format('svg')->size(150)->generate($payload));
+            $verifyUrl = route('portal.verify-donor', $donor->registration_no ?? $donor->id);
+            $qrCodes[$donor->id] = base64_encode(QrCode::format('svg')->size(150)->generate($verifyUrl));
         }
 
         return view('admin.donor-cards.print', compact('donors', 'ngoName', 'ngoLogo', 'qrCodes'));

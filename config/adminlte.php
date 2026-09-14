@@ -315,7 +315,7 @@ return [
             'text' => 'My Profile',
             'route' => 'admin.profile',
             'icon' => 'fas fa-fw fa-user',
-            'type' => 'navbar-user',
+            'topnav_user' => true,
         ],
         // Sidebar items — grouped with section headers
         ['header' => 'general'],

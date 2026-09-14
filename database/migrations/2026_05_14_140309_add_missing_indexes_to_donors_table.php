@@ -9,8 +9,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('donors', function (Blueprint $table) {
-            $table->index('cnic');
-            $table->index('phone');
             $table->index('city_id');
         });
     }
@@ -18,8 +16,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('donors', function (Blueprint $table) {
-            $table->dropIndex(['cnic']);
-            $table->dropIndex(['phone']);
             $table->dropIndex(['city_id']);
         });
     }

@@ -187,8 +187,18 @@
                                         <span class="text-success"><i class="fas fa-check-circle mr-1"></i>Never donated</span>
                                     @endif
                                 </div>
-                                <div class="match-actions">
-                                    <button class="btn btn-sm btn-success btn-call" data-donor="{{ $donor->id }}" data-name="{{ $donor->name }}" data-request="{{ $bloodRequest->id }}">
+                                <div class="match-actions d-flex align-items-center" style="gap:6px;">
+                                    @php
+                                        $cityName = $bloodRequest->city->name ?? '';
+                                        $waText = "السلام علیکم {$donor->name}، انسانیت فاؤنڈیشن بلڈ بینک کو مریض {$bloodRequest->patient_name} کے لیے {$bloodRequest->hospital} ({$cityName}) میں {$bloodRequest->blood_group} خون کے {$bloodRequest->units_required} یونٹ کی فوری ضرورت ہے۔ رابطہ: {$bloodRequest->contact_phone}۔ کیا آپ خون کا عطیہ دے سکتے ہیں؟";
+                                        $waUrl = $donor->getWhatsAppUrl($waText);
+                                    @endphp
+                                    @if($waUrl)
+                                        <a href="{{ $waUrl }}" target="_blank" class="btn btn-sm btn-success" style="background:#25D366;border-color:#25D366;font-weight:600;" title="Send WhatsApp Emergency Message">
+                                            <i class="fab fa-whatsapp mr-1"></i>WhatsApp
+                                        </a>
+                                    @endif
+                                    <button class="btn btn-sm btn-info btn-call" data-donor="{{ $donor->id }}" data-name="{{ $donor->name }}" data-request="{{ $bloodRequest->id }}">
                                         <i class="fas fa-phone mr-1"></i>Call
                                     </button>
                                     <a href="{{ route('admin.donors.show', $donor) }}" class="btn btn-sm btn-outline-secondary">

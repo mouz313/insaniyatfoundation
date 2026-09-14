@@ -8,24 +8,8 @@
 
     <div class="sidebar">
 
-        {{-- User Panel --}}
-        @auth
-        <div class="user-panel">
-            <div class="user-panel-avatar">
-                <img src="{{ Auth::user()->adminlte_image() }}" class="img-circle" alt="{{ Auth::user()->name }}">
-            </div>
-            <div class="user-panel-info">
-                <span class="user-panel-name">{{ Auth::user()->name }}</span>
-                <span class="user-panel-role">{{ Auth::user()->adminlte_desc() }}</span>
-            </div>
-            <a href="{{ route('admin.profile') }}" class="user-panel-link" title="Profile">
-                <i class="fas fa-cog"></i>
-            </a>
-        </div>
-        @endauth
-
         {{-- Sidebar Menu --}}
-        <nav class="mt-2">
+        <nav class="sidebar-nav-container mt-3">
             <ul class="nav nav-pills nav-sidebar flex-column {{ config('adminlte.classes_sidebar_nav', '') }}"
                 data-widget="treeview" role="menu"
                 @if(config('adminlte.sidebar_nav_animation_speed') != 300)
@@ -39,6 +23,22 @@
         </nav>
     </div>
 
+    {{-- User Panel at the End / Bottom of Sidebar --}}
+    @auth
+    <div class="user-panel user-panel-bottom">
+        <div class="user-panel-avatar">
+            <img src="{{ Auth::user()->adminlte_image() }}" class="img-circle" alt="{{ Auth::user()->name }}">
+        </div>
+        <div class="user-panel-info">
+            <span class="user-panel-name">{{ Auth::user()->name }}</span>
+            <span class="user-panel-role">{{ Auth::user()->adminlte_desc() }}</span>
+        </div>
+        <a href="{{ route('admin.profile') }}" class="user-panel-link" title="{{ __('app.my_profile') }}">
+            <i class="fas fa-cog"></i>
+        </a>
+    </div>
+    @endauth
+
 </aside>
 
 <style>
@@ -47,42 +47,63 @@
     background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%) !important;
     border-right: none !important;
     box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1038 !important;
+    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out !important;
 }
 
-/* ─── Sidebar scrollable area ─── */
-.sidebar {
-    padding-bottom: 20px;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+@media (min-width: 992px) {
+    body:not(.sidebar-collapse) .main-sidebar {
+        width: 250px !important;
+        max-width: 250px !important;
+    }
+    body:not(.sidebar-collapse) .brand-link {
+        width: 250px !important;
+        max-width: 250px !important;
+    }
+    body:not(.sidebar-collapse) .sidebar {
+        width: 250px !important;
+        max-width: 250px !important;
+    }
+    body:not(.sidebar-collapse) .user-panel {
+        width: 250px !important;
+        max-width: 250px !important;
+    }
 }
 
-.sidebar::-webkit-scrollbar {
-    width: 4px;
-}
-.sidebar::-webkit-scrollbar-track {
-    background: transparent;
-}
-.sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.15);
-    border-radius: 4px;
-}
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.25);
-}
-
-/* ─── Brand Link ─── */
 .brand-link {
-    padding: 15px 15px !important;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+    padding: 16px 16px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
     display: flex !important;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     text-decoration: none !important;
-    min-height: 70px;
+    min-height: 72px;
+    margin-bottom: 12px;
+    box-sizing: border-box !important;
+    transition: padding 0.3s ease-in-out, width 0.3s ease-in-out !important;
 }
 .brand-link:hover {
     background: rgba(255,255,255,0.03);
+}
+
+/* ─── Sidebar scrollable area ─── */
+.sidebar {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-bottom: 20px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
 }
 
 .sidebar-logo-wrapper {
@@ -113,6 +134,8 @@
     letter-spacing: 0.3px;
     text-align: left;
     line-height: 1.3;
+    flex: 1;
+    min-width: 0;
     max-width: 100%;
     white-space: normal;
     display: -webkit-box;
@@ -121,14 +144,89 @@
     overflow: hidden;
 }
 
-/* ─── User Panel ─── */
+/* ─── Sidebar Menu Spacing ─── */
+.sidebar-nav-container {
+    margin-top: 14px !important;
+    padding-top: 4px !important;
+}
+
+/* ─── Disable all horizontal scrolling in sidebar ─── */
+.main-sidebar,
+.main-sidebar *,
+.sidebar,
+.sidebar *,
+.sidebar-nav-container,
+.nav-sidebar,
+.os-host,
+.os-viewport,
+.os-content {
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Hide OverlayScrollbars horizontal bar completely */
+.os-scrollbar-horizontal,
+.os-scrollbar-horizontal * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    pointer-events: none !important;
+}
+
+@if(app()->getLocale() === 'ur')
+.sidebar-logo-wrapper {
+    margin-right: 0;
+    margin-left: 12px;
+}
+.sidebar-brand-text {
+    text-align: right;
+    font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', Arial, serif;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.user-panel-info {
+    text-align: right;
+}
+.nav-sidebar .nav-item > .nav-link {
+    text-align: right;
+    font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', Arial, serif;
+}
+.nav-sidebar .nav-item > .nav-link .nav-icon {
+    margin-right: 0;
+    margin-left: 8px;
+}
+.nav-sidebar .nav-item > .nav-link.active::after {
+    left: auto;
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+.nav-sidebar .nav-treeview {
+    padding-left: 0;
+    padding-right: 10px;
+}
+.nav-sidebar .nav-treeview .nav-item > .nav-link {
+    padding: 8px 24px 8px 14px;
+}
+@endif
+
+/* ─── User Panel (Pinned at Bottom) ─── */
 .user-panel {
+    flex-shrink: 0;
+    box-sizing: border-box !important;
+    margin-top: auto;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    margin: 0 0 6px;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: none !important;
+    background: rgba(13, 27, 42, 0.75);
+    backdrop-filter: blur(10px);
+    margin: 0;
+    z-index: 10;
+    transition: padding 0.3s ease-in-out, width 0.3s ease-in-out !important;
 }
 .user-panel-avatar {
     flex-shrink: 0;
@@ -258,70 +356,187 @@
     border-radius: 0 3px 3px 0;
 }
 
-/* ─── Collapsed Mode ─── */
-.sidebar-collapse .main-sidebar .brand-link {
-    padding: 10px 8px !important;
-    min-height: 56px;
-    justify-content: center !important;
-}
-.sidebar-collapse .main-sidebar .sidebar-logo-wrapper {
-    width: 36px;
-    height: 36px;
-    margin-bottom: 0;
-    margin-right: 0;
-}
-.sidebar-collapse .main-sidebar .sidebar-logo-img {
-    width: 24px;
-    height: 24px;
-}
-.sidebar-collapse .main-sidebar .sidebar-brand-text {
-    display: none;
-}
-.sidebar-collapse .user-panel .user-panel-info,
-.sidebar-collapse .user-panel .user-panel-link {
-    display: none;
-}
-.sidebar-collapse .user-panel {
-    padding: 10px;
-    justify-content: center;
-}
-.sidebar-collapse .user-panel-avatar img {
-    width: 30px;
-    height: 30px;
-}
-.sidebar-collapse .main-sidebar:hover .user-panel .user-panel-info,
-.sidebar-collapse .main-sidebar:hover .user-panel .user-panel-link {
-    display: flex;
-}
-.sidebar-collapse .main-sidebar:hover .user-panel {
-    padding: 14px 16px;
-    justify-content: flex-start;
-}
-.sidebar-collapse .main-sidebar:hover .user-panel-avatar img {
-    width: 36px;
-    height: 36px;
-}
+/* ─── Collapsed Mode (Mini Sidebar) ─── */
+@media (min-width: 992px) {
+    body.sidebar-collapse .main-sidebar:not(:hover) {
+        width: 4.6rem !important;
+        max-width: 4.6rem !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .brand-link {
+        width: 4.6rem !important;
+        max-width: 4.6rem !important;
+        padding: 12px 0 !important;
+        min-height: 56px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin-bottom: 6px !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .sidebar-logo-wrapper {
+        width: 38px !important;
+        height: 38px !important;
+        margin: 0 auto !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .sidebar-logo-img {
+        width: 26px !important;
+        height: 26px !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .sidebar-brand-text {
+        display: none !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .sidebar {
+        width: 4.6rem !important;
+        max-width: 4.6rem !important;
+        padding: 0 !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .sidebar-nav-container {
+        width: 100% !important;
+        margin-top: 8px !important;
+        padding: 0 !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-item {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-item > .nav-link {
+        width: 44px !important;
+        height: 44px !important;
+        margin: 4px auto !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 10px !important;
+        text-align: center !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-item > .nav-link .nav-icon {
+        margin: 0 !important;
+        font-size: 18px !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-item > .nav-link p {
+        display: none !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .nav-sidebar .nav-item > .nav-link::after {
+        display: none !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .nav-header {
+        display: none !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .nav-treeview {
+        display: none !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .user-panel {
+        width: 4.6rem !important;
+        max-width: 4.6rem !important;
+        padding: 10px 0 !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .user-panel-avatar {
+        margin: 0 auto !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .user-panel-avatar img {
+        width: 34px !important;
+        height: 34px !important;
+    }
+    body.sidebar-collapse .main-sidebar:not(:hover) .user-panel-info,
+    body.sidebar-collapse .main-sidebar:not(:hover) .user-panel-link {
+        display: none !important;
+    }
 
-/* ─── Mini sidebar hover expand ─── */
-.sidebar-mini.sidebar-collapse .main-sidebar {
-    width: 60px !important;
-    overflow: hidden;
-}
-.sidebar-mini.sidebar-collapse .main-sidebar:hover {
-    width: 250px !important;
-    overflow-y: auto;
-}
-.sidebar-mini.sidebar-collapse .main-sidebar .nav-link p {
-    display: none;
-}
-.sidebar-mini.sidebar-collapse .main-sidebar .nav-treeview {
-    display: none !important;
-}
-.sidebar-mini.sidebar-collapse .main-sidebar:hover .nav-treeview {
-    display: block !important;
-}
-.sidebar-mini.sidebar-collapse .main-sidebar:hover .nav-link p,
-.sidebar-mini.sidebar-collapse .main-sidebar:hover .sidebar-brand-text {
-    display: block !important;
+    /* ─── Hover Expansion in Collapsed Mode ─── */
+    body.sidebar-collapse .main-sidebar:hover {
+        width: 250px !important;
+        max-width: 250px !important;
+        box-shadow: 4px 0 25px rgba(0,0,0,0.3) !important;
+        z-index: 1040 !important;
+        overflow-y: auto !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .brand-link {
+        width: 250px !important;
+        max-width: 250px !important;
+        padding: 16px 16px !important;
+        justify-content: flex-start !important;
+        min-height: 72px !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .sidebar-logo-wrapper {
+        width: 45px !important;
+        height: 45px !important;
+        margin-right: 12px !important;
+        margin-left: 0 !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .sidebar-brand-text {
+        display: -webkit-box !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .sidebar {
+        width: 250px !important;
+        max-width: 250px !important;
+        padding-bottom: 20px !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .sidebar-nav-container {
+        width: 100% !important;
+        margin-top: 14px !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-item {
+        width: 100% !important;
+        display: block !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-item > .nav-link {
+        width: auto !important;
+        height: auto !important;
+        margin: 2px 10px !important;
+        padding: 10px 14px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        border-radius: 10px !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-item > .nav-link .nav-icon {
+        margin-right: 8px !important;
+        margin-left: 0 !important;
+        font-size: 16px !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-item > .nav-link p {
+        display: inline-block !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .nav-header {
+        display: block !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .nav-treeview {
+        display: block !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .user-panel {
+        width: 250px !important;
+        max-width: 250px !important;
+        padding: 12px 16px !important;
+        justify-content: flex-start !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .user-panel-info,
+    body.sidebar-collapse .main-sidebar:hover .user-panel-link {
+        display: flex !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .user-panel-avatar img {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    @if(app()->getLocale() === 'ur')
+    body.sidebar-collapse .main-sidebar:hover .sidebar-logo-wrapper {
+        margin-right: 0 !important;
+        margin-left: 12px !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-item > .nav-link {
+        text-align: right !important;
+    }
+    body.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-item > .nav-link .nav-icon {
+        margin-right: 0 !important;
+        margin-left: 8px !important;
+    }
+    @endif
 }
 </style>

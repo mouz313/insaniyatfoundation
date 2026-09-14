@@ -5,7 +5,11 @@
     $ngoLogo = \App\Models\Setting::where('key', 'ngo_logo')->value('value');
     $ngoName = \App\Models\Setting::where('key', 'ngo_name')->value('value');
     $logoImg = $ngoLogo ? 'storage/' . $ngoLogo : config('adminlte.logo_img', 'vendor/adminlte/dist/img/AdminLTELogo.png');
-    $brandText = strip_tags($ngoName ?: config('adminlte.logo', 'BloodDonor'));
+    if (app()->getLocale() === 'ur') {
+        $brandText = __('app.brand_name');
+    } else {
+        $brandText = strip_tags($ngoName ?: config('adminlte.logo', 'Insaniyat Foundation Blood Bank'));
+    }
 @endphp
 
 @if (config('adminlte.use_route_url', false))

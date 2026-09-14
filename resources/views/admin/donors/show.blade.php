@@ -85,6 +85,10 @@
                     <div class="mt-1">
                         <span class="badge badge-danger" style="font-size:1rem;padding:5px 18px;border-radius:20px;"><i class="fas fa-tint"></i> {{ $donor->blood_group }}</span>
                         <span class="badge {{ $donor->status == 'active' ? 'badge-success' : ($donor->status == 'ineligible' ? 'badge-danger' : 'badge-secondary') }}" style="font-size:0.85rem;padding:5px 14px;border-radius:20px;">{{ ucfirst($donor->status) }}</span>
+                        @php $tier = $donor->tier; @endphp
+                        <span class="badge" style="background:{{ $tier['bg'] }};color:{{ $tier['color'] }};border:1px solid {{ $tier['color'] }};font-size:0.85rem;padding:5px 14px;border-radius:20px;">
+                            <i class="fas {{ $tier['icon'] }} mr-1"></i>{{ app()->getLocale() == 'ur' ? $tier['name_ur'] : $tier['name'] }}
+                        </span>
                     </div>
                     @if($donor->is_student)
                         <span class="badge badge-info mt-1" style="border-radius:20px;"><i class="fas fa-graduation-cap"></i> Student</span>
@@ -129,7 +133,14 @@
                         <dt class="col-5 text-muted"><i class="fas fa-fw fa-id-card"></i> CNIC</dt>
                         <dd class="col-7">{{ $donor->cnic ?? 'N/A' }}</dd>
                         <dt class="col-5 text-muted"><i class="fas fa-fw fa-phone"></i> Phone</dt>
-                        <dd class="col-7">{{ $donor->phone }}</dd>
+                        <dd class="col-7">
+                            {{ $donor->phone }}
+                            @if($donor->whatsapp_url)
+                                <a href="{{ $donor->whatsapp_url }}" target="_blank" class="badge badge-success ml-1" style="background:#25D366;font-size:12px;padding:3px 8px;" title="Chat on WhatsApp">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </a>
+                            @endif
+                        </dd>
                         <dt class="col-5 text-muted"><i class="fas fa-fw fa-calendar-alt"></i> DOB</dt>
                         <dd class="col-7">{{ $donor->dob ? $donor->dob->format('d M Y') . ' (' . $donor->age . ' yrs)' : 'N/A' }}</dd>
                         <dt class="col-5 text-muted"><i class="fas fa-fw fa-venus-mars"></i> Gender</dt>

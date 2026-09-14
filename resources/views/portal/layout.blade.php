@@ -95,6 +95,18 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('portal.availability') ? 'active' : '' }}" href="{{ route('portal.availability') }}"><i class="fas fa-search me-1"></i> Availability</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('portal.blood-request.*') ? 'active' : '' }}" href="{{ route('portal.blood-request.create') }}" style="color:#ff6b6b !important;font-weight:600;">
+                            <i class="fas fa-hand-holding-medical me-1"></i> Request Blood
+                        </a>
+                    </li>
+                    @auth
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-sm btn-outline-light text-white px-3 py-1 ms-lg-2" href="{{ route('admin.dashboard') }}" style="border-radius:20px;display:inline-flex;align-items:center;">
+                                <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                            </a>
+                        </li>
+                    @endauth
                 </ul>
             </div>
         </div>

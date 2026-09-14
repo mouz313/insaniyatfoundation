@@ -40,4 +40,18 @@ class VerificationController extends Controller
 
         return view('portal.verify', ['donor' => null]);
     }
+
+    public function verifyDonor($identifier)
+    {
+        $donor = Donor::with(['city', 'area', 'badges', 'donations'])
+            ->where('registration_no', $identifier)
+            ->orWhere('id', $identifier)
+            ->firstOrFail();
+
+        $ngoName = \App\Models\Setting::where('key', 'ngo_name')->value('value') ?? 'Insaniyat Foundation Blood Bank';
+        $ngoLogo = \App\Models\Setting::where('key', 'ngo_logo')->value('value');
+        $ngoPhone = \App\Models\Setting::where('key', 'contact_phone')->value('value') ?? '+92 300 1234567';
+
+        return view('portal.verify-donor', compact('donor', 'ngoName', 'ngoLogo', 'ngoPhone'));
+    }
 }

@@ -18,6 +18,8 @@
                 <div style="font-size: 22px; font-weight: 700; color: #333; line-height: 1.2; font-family: 'Courier New', monospace;" id="clockTime"></div>
                 <div style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px;" id="clockDate"></div>
             </div>
+            <a href="{{ route('admin.donors.export-csv', request()->query()) }}" class="btn btn-outline-secondary btn-sm mr-1"><i class="fas fa-file-export"></i> Export CSV</a>
+            <button type="button" class="btn btn-outline-primary btn-sm mr-1" data-toggle="modal" data-target="#importCsvModal"><i class="fas fa-file-import"></i> Import CSV</button>
             <a href="{{ route('admin.donor-cards.index') }}" class="btn btn-info btn-sm mr-1"><i class="fas fa-id-card"></i> Cards</a>
             <a href="{{ route('admin.donors.create') }}" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add Donor</a>
         </div>
@@ -167,9 +169,12 @@
                                             @if($donor->is_student)
                                                 <span class="badge badge-info" style="border-radius: 20px; font-size: 9px; vertical-align: top;"><i class="fas fa-graduation-cap"></i></span>
                                             @endif
-                                            @if(!$donor->last_donation_date)
-                                                <div><small class="text-success"><i class="fas fa-circle" style="font-size: 6px; vertical-align: middle;"></i> New</small></div>
-                                            @endif
+                                            @php $tier = $donor->tier; @endphp
+                                            <div class="mt-1">
+                                                <span class="badge" style="background-color: {{ $tier['bg'] }}; color: {{ $tier['color'] }}; border-radius: 12px; font-size: 9.5px; font-weight: 600; padding: 2px 7px;">
+                                                    <i class="{{ $tier['icon'] }}"></i> {{ $tier['name'] }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -210,6 +215,11 @@
                                         <a href="{{ route('admin.donors.show', $donor->id) }}" class="btn btn-outline-info" title="View" style="border-radius: 6px 0 0 6px;">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        @if(($donor->total_donations ?? 0) > 0)
+                                            <a href="{{ route('admin.donors.certificate', $donor->id) }}" class="btn btn-outline-success" title="Official Certificate" target="_blank">
+                                                <i class="fas fa-award"></i>
+                                            </a>
+                                        @endif
                                         <a href="{{ route('admin.donors.edit', $donor->id) }}" class="btn btn-outline-warning" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
@@ -229,6 +239,54 @@
             </div>
             <div class="p-3">
                 {{ $donors->links() }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk CSV Import Modal -->
+    <div class="modal fade" id="importCsvModal" tabindex="-1" role="dialog" aria-labelledby="importCsvModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow">
+                <form action="{{ route('admin.donors.import-csv') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="importCsvModalLabel"><i class="fas fa-file-import mr-2"></i> Import Donors from CSV</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="alert alert-info py-2 px-3 mb-3" style="font-size: 13px;">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Upload your donor list in CSV format. Duplicates (matching phone or CNIC) will be skipped automatically.
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Select CSV File <span class="text-danger">*</span></label>
+                            <div class="custom-file">
+                                <input type="file" name="csv_file" class="custom-file-input" id="customFile" accept=".csv,.txt" required>
+                                <label class="custom-file-label" for="customFile">Choose file (.csv)...</label>
+                            </div>
+                            <small class="form-text text-muted">Maximum file size: 5MB</small>
+                        </div>
+
+                        <div class="p-3 bg-light rounded border mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong style="font-size: 13px;"><i class="fas fa-download mr-1 text-primary"></i> Sample CSV Template</strong>
+                                    <div class="text-muted" style="font-size: 12px;">Download standard column headers & sample data.</div>
+                                </div>
+                                <a href="{{ route('admin.donors.sample-csv') }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i> Download Sample
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-upload mr-1"></i> Upload & Import</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -283,6 +341,11 @@ $(function() {
                 $('#delete-form-' + id).submit();
             }
         });
+    });
+
+    $('#customFile').on('change', function() {
+        var fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName || 'Choose file (.csv)...');
     });
 });
 </script>

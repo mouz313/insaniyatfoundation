@@ -22,7 +22,7 @@ class LocalizeAdminlteMenu
         return [
             ['type' => 'navbar-search',    'text' => __('app.search'),       'topnav_right' => true],
             ['type' => 'fullscreen-widget',                                   'topnav_right' => true],
-            ['text' => __('app.my_profile'), 'route' => 'admin.profile', 'icon' => 'fas fa-fw fa-user', 'type' => 'navbar-user'],
+            ['text' => __('app.my_profile'), 'route' => 'admin.profile', 'icon' => 'fas fa-fw fa-user', 'topnav_user' => true],
 
             ['text' => __('app.dashboard'), 'icon' => 'fas fa-fw fa-tachometer-alt', 'route' => 'admin.dashboard', 'classes' => 'nav-item-dashboard'],
 

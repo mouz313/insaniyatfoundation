@@ -228,4 +228,75 @@ class Donor extends Model
     {
         return $query->where('blood_group', $group);
     }
+
+    public function getCleanPhoneAttribute(): string
+    {
+        $phone = preg_replace('/[^0-9]/', '', (string)$this->phone);
+        if (str_starts_with($phone, '03')) {
+            $phone = '92' . substr($phone, 1);
+        } elseif (str_starts_with($phone, '3') && strlen($phone) === 10) {
+            $phone = '92' . $phone;
+        }
+        return $phone;
+    }
+
+    public function getWhatsAppUrl(?string $customMessage = null): ?string
+    {
+        $phone = $this->clean_phone;
+        if (empty($phone)) return null;
+
+        $msg = $customMessage ?? "السلام علیکم {$this->name}، انسانیت فاؤنڈیشن بلڈ بینک کی طرف سے رابطہ کیا جا رہا ہے۔";
+        return "https://wa.me/{$phone}?text=" . urlencode($msg);
+    }
+
+    public function getTierAttribute(): array
+    {
+        $donations = (int)($this->total_donations ?? 0);
+        if ($donations >= 10) {
+            return [
+                'name' => 'Platinum Hero',
+                'name_ur' => 'پلاٹینم ہیرو',
+                'icon' => 'fa-gem',
+                'color' => '#6610f2',
+                'bg' => 'rgba(102, 16, 242, 0.15)',
+                'badge' => 'badge-purple',
+            ];
+        } elseif ($donations >= 6) {
+            return [
+                'name' => 'Gold Lifesaver',
+                'name_ur' => 'گولڈ لائف سیور',
+                'icon' => 'fa-crown',
+                'color' => '#d4af37',
+                'bg' => 'rgba(212, 175, 55, 0.18)',
+                'badge' => 'badge-warning',
+            ];
+        } elseif ($donations >= 3) {
+            return [
+                'name' => 'Silver Champion',
+                'name_ur' => 'سلور چیمپئن',
+                'icon' => 'fa-medal',
+                'color' => '#6c757d',
+                'bg' => 'rgba(108, 117, 125, 0.15)',
+                'badge' => 'badge-secondary',
+            ];
+        } elseif ($donations >= 1) {
+            return [
+                'name' => 'Bronze Saver',
+                'name_ur' => 'برونز سیور',
+                'icon' => 'fa-award',
+                'color' => '#cd7f32',
+                'bg' => 'rgba(205, 127, 50, 0.18)',
+                'badge' => 'badge-info',
+            ];
+        } else {
+            return [
+                'name' => 'New Donor',
+                'name_ur' => 'نیا ڈونر',
+                'icon' => 'fa-user',
+                'color' => '#28a745',
+                'bg' => 'rgba(40, 167, 69, 0.12)',
+                'badge' => 'badge-success',
+            ];
+        }
+    }
 }
