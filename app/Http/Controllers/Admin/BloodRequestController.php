@@ -37,9 +37,7 @@ class BloodRequestController extends Controller
         }
 
         $bloodRequests = $query->latest()->paginate(20);
-        $cities = Cache::remember('cities.all', 3600, function () {
-            return City::orderBy('name')->get();
-        });
+        $cities = City::getAllCached();
 
         return view('admin.blood-requests.index', compact('bloodRequests', 'cities'));
     }

@@ -41,8 +41,12 @@
                         <small class="text-muted text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">City</small>
                         <select name="city_id" class="form-control form-control-sm">
                             <option value="">All</option>
-                            @foreach($cities as $city)
-                                <option value="{{ $city->id }}" {{ request('city_id') == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                            @foreach($cities as $key => $city)
+                                @php
+                                    $cityId = is_object($city) ? ($city->id ?? $key) : (is_array($city) ? ($city['id'] ?? $key) : $key);
+                                    $cityName = is_object($city) ? ($city->name ?? (string)$city) : (is_array($city) ? ($city['name'] ?? (string)$city) : (string)$city);
+                                @endphp
+                                <option value="{{ $cityId }}" {{ (string)request('city_id') === (string)$cityId ? 'selected' : '' }}>{{ $cityName }}</option>
                             @endforeach
                         </select>
                     </div>

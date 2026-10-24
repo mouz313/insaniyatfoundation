@@ -158,8 +158,12 @@ main > .container { max-width: 100%; padding-left: 40px; padding-right: 40px; }
                             <label class="font-weight-bold text-muted small">City</label>
                             <select name="city_id" class="form-select rounded-pill" style="border-color:#dee2e6;">
                                 <option value="">All Cities</option>
-                                @foreach($cities as $city)
-                                    <option value="{{ $city->id }}" {{ request('city_id') == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                                @foreach($cities as $key => $city)
+                                    @php
+                                        $cityId = is_object($city) ? ($city->id ?? $key) : (is_array($city) ? ($city['id'] ?? $key) : $key);
+                                        $cityName = is_object($city) ? ($city->name ?? (string)$city) : (is_array($city) ? ($city['name'] ?? (string)$city) : (string)$city);
+                                    @endphp
+                                    <option value="{{ $cityId }}" {{ (string)request('city_id') === (string)$cityId ? 'selected' : '' }}>{{ $cityName }}</option>
                                 @endforeach
                             </select>
                         </div>

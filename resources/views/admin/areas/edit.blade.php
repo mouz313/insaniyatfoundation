@@ -15,8 +15,12 @@
                 @csrf
                 @method('PUT')
                 <x-adminlte-select name="city_id" label="City">
-                    @foreach($cities as $city)
-                        <option value="{{ $city->id }}" {{ old('city_id', $area->city_id) == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                    @foreach($cities as $key => $city)
+                        @php
+                            $cityId = is_object($city) ? ($city->id ?? $key) : (is_array($city) ? ($city['id'] ?? $key) : $key);
+                            $cityName = is_object($city) ? ($city->name ?? (string)$city) : (is_array($city) ? ($city['name'] ?? (string)$city) : (string)$city);
+                        @endphp
+                        <option value="{{ $cityId }}" {{ (string)old('city_id', $area->city_id) === (string)$cityId ? 'selected' : '' }}>{{ $cityName }}</option>
                     @endforeach
                 </x-adminlte-select>
                 <x-adminlte-input name="name" label="Area Name" placeholder="Enter area name" value="{{ old('name', $area->name) }}"/>

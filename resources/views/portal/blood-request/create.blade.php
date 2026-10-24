@@ -58,8 +58,12 @@
                         <label class="font-weight-bold text-muted small">City <span class="text-danger">*</span></label>
                         <select name="city_id" class="form-control" required style="border-radius:10px;">
                             <option value="">Select City</option>
-                            @foreach($cities as $city)
-                                <option value="{{ $city->id }}" {{ old('city_id') == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                            @foreach($cities as $key => $city)
+                                @php
+                                    $cityId = is_object($city) ? ($city->id ?? $key) : (is_array($city) ? ($city['id'] ?? $key) : $key);
+                                    $cityName = is_object($city) ? ($city->name ?? (string)$city) : (is_array($city) ? ($city['name'] ?? (string)$city) : (string)$city);
+                                @endphp
+                                <option value="{{ $cityId }}" {{ (string)old('city_id') === (string)$cityId ? 'selected' : '' }}>{{ $cityName }}</option>
                             @endforeach
                         </select>
                     </div>

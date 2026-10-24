@@ -47,8 +47,12 @@
                 <div class="col-md-3">
                     <x-adminlte-select name="city_id" label="City">
                         <option value="">All Cities</option>
-                        @foreach($cities ?? [] as $city)
-                            <option value="{{ $city->id }}">{{ $city->name }}</option>
+                        @foreach($cities ?? [] as $key => $city)
+                            @php
+                                $cityId = is_object($city) ? ($city->id ?? $key) : (is_array($city) ? ($city['id'] ?? $key) : $key);
+                                $cityName = is_object($city) ? ($city->name ?? (string)$city) : (is_array($city) ? ($city['name'] ?? (string)$city) : (string)$city);
+                            @endphp
+                            <option value="{{ $cityId }}">{{ $cityName }}</option>
                         @endforeach
                     </x-adminlte-select>
                 </div>

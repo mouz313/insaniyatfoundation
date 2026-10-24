@@ -64,9 +64,7 @@ class DonorController extends Controller
         $eligibleNowCount = $stats['eligibleNowCount'];
         $cooldownCount = $stats['cooldownCount'];
 
-        $cities = Cache::remember('cities.all', 3600, function () {
-            return City::orderBy('name')->get();
-        });
+        $cities = City::getAllCached();
 
         return view('admin.donors.index', compact(
             'donors', 'cities', 'total', 'activeCount', 'eligibleNowCount', 'cooldownCount'

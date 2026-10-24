@@ -86,8 +86,12 @@
                             <div class="input-group">
                                 <select name="city_id" id="city_id" class="form-control" required>
                                     <option value="">Select City</option>
-                                    @foreach($cities as $city)
-                                        <option value="{{ $city->id }}" {{ old('city_id', $donor->city_id) == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                                    @foreach($cities as $key => $city)
+                                        @php
+                                            $cityId = is_object($city) ? ($city->id ?? $key) : (is_array($city) ? ($city['id'] ?? $key) : $key);
+                                            $cityName = is_object($city) ? ($city->name ?? (string)$city) : (is_array($city) ? ($city['name'] ?? (string)$city) : (string)$city);
+                                        @endphp
+                                        <option value="{{ $cityId }}" {{ (string)old('city_id', $donor->city_id) === (string)$cityId ? 'selected' : '' }}>{{ $cityName }}</option>
                                     @endforeach
                                 </select>
                                 <div class="input-group-append">
@@ -320,8 +324,12 @@
                             <label for="newAreaCity">City <span class="text-danger">*</span></label>
                             <select id="newAreaCity" class="form-control" required>
                                 <option value="">Select City</option>
-                                @foreach($cities as $city)
-                                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                @foreach($cities as $key => $city)
+                                    @php
+                                        $cityId = is_object($city) ? ($city->id ?? $key) : (is_array($city) ? ($city['id'] ?? $key) : $key);
+                                        $cityName = is_object($city) ? ($city->name ?? (string)$city) : (is_array($city) ? ($city['name'] ?? (string)$city) : (string)$city);
+                                    @endphp
+                                    <option value="{{ $cityId }}">{{ $cityName }}</option>
                                 @endforeach
                             </select>
                         </div>
